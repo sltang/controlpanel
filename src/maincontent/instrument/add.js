@@ -74,26 +74,27 @@ const types = [
   },
 ]
 
-const projects = [
-  { value: '', label: 'None' },
-  { value: 'Project 1', label: 'Project 1' },
-  { value: 'Project 2', label: 'Project 2' },
-]
+// const projects = [
+//   { value: '', label: 'None' },
+//   { value: 'Project 1', label: 'Project 1' },
+//   { value: 'Project 2', label: 'Project 2' },
+// ]
 
 class AddInstrument extends Component {
 
   constructor(props) {
-    super(props);
-    //const { match } = this.props;
-    //let instruments = dataService.getById('instrument', match.params.id);    
+    super(props);   
     this.state = {
       alwaysUseDefaultProjectDisabled: true,
-      instrument:{ name: '',desc: '', application: 'OpenLab CDS', controller: 'CND8074VHW', type: '', contact: '', defaultProject: '',  alwaysUseDefaultProject:false},
+      instrument:{},// name: '',desc: '', application: 'OpenLab CDS', controller: 'CND8074VHW', type: '', contact: '', defaultProject: '',  alwaysUseDefaultProject:false},
+      projects: []
     }
    
   }
 
   componentDidMount() {
+    let projects = dataService.getAll('project')
+    this.setState({projects})
     
   }
 
@@ -106,21 +107,15 @@ class AddInstrument extends Component {
   };
 
   handleDefaultProjectChange = event => {
-    //if (event) {
-      
-        //this.setState({alwaysUseDefaultProject:event.target.value === 'None'})
-        //this.state.instrument.project = event.target.value;
-        let instrument = this.state.instrument;
-        if (event.target.value === '') {
-          instrument.alwaysUseDefaultProject = false;
-        }
-        instrument.defaultProject = event.target.value;
-        this.setState({
-          instrument: instrument,
-          alwaysUseDefaultProjectDisabled: event.target.value === ''
-        });
-      //}
-    //}
+    let instrument = this.state.instrument;
+    if (event.target.value === '') {
+      instrument.alwaysUseDefaultProject = false;
+    }
+    instrument.defaultProject = event.target.value;
+    this.setState({
+      instrument: instrument,
+      alwaysUseDefaultProjectDisabled: event.target.value === ''
+    });
   };
 
   handleOKClick = event => {
@@ -137,7 +132,7 @@ class AddInstrument extends Component {
 
   render() {
     const { classes } = this.props;
-    const { instrument, alwaysUseDefaultProjectDisabled } = this.state;
+    const { instrument, alwaysUseDefaultProjectDisabled, projects } = this.state;
     return (
       <div>
         <div className={classes.root}>Create Instrument</div>
@@ -146,7 +141,7 @@ class AddInstrument extends Component {
             id="name"
             label="Name"
             className={classes.textField}
-            value={instrument.name}
+            value={instrument.name ? instrument.name:''}
             onChange={this.handleChange('name')}
             margin="normal"
             fullWidth
@@ -157,7 +152,7 @@ class AddInstrument extends Component {
             className={classes.textFieldAlign}
             multiline
             rows="4"
-            value={instrument.desc}
+            value={instrument.desc ? instrument.desc:''}
             onChange={this.handleChange('desc')}
             margin="normal"
             fullWidth
@@ -167,7 +162,7 @@ class AddInstrument extends Component {
             label="Application"
             className={classes.textFieldAlign}
             readOnly
-            value={instrument.application}
+            value={instrument.application ? instrument.application:''}
             margin="normal"
             fullWidth
           />
@@ -176,7 +171,7 @@ class AddInstrument extends Component {
             label="Instrument controller"
             className={classes.textFieldAlign}
             readOnly
-            value={instrument.controller}
+            value={instrument.controller ? instrument.controller:''}
             margin="normal"
             fullWidth
           />
@@ -213,16 +208,17 @@ class AddInstrument extends Component {
           <FormControl className={classes.formControl}>
             <InputLabel htmlFor="defaultProject">Default Project</InputLabel>
             <Select
-              value={instrument.defaultProject}
+              value={instrument.defaultProject ? instrument.defaultProject:''}
               onChange={this.handleDefaultProjectChange}
               inputProps={{
               name: 'Default Project',
               id: 'defaultProject',
               }}
               >
-              {projects.map(option => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              <MenuItem value={''}>None</MenuItem>
+              {projects.map(project => (
+                <MenuItem key={project.id} value={project.id}>
+                  {project.name}
                 </MenuItem>
               ))}
             </Select>
@@ -231,7 +227,7 @@ class AddInstrument extends Component {
             control={
               <Checkbox
                 disabled={alwaysUseDefaultProjectDisabled}
-                checked={instrument.alwaysUseDefaultProject}
+                checked={instrument.alwaysUseDefaultProject ? instrument.alwaysUseDefaultProject:false}
                 onChange={this.handleChange('alwaysUseDefaultProject')}
                 className={classes.defaultProjectCheck}
               />

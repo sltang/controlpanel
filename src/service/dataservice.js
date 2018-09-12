@@ -1,9 +1,11 @@
 import * as instrumentService from './instrument.js';
 import * as projectService from './project.js';
+import * as locationService from './location.js'
 
 const mapping = {
   'instrument' : instrumentService,
-  'project': projectService
+  'project': projectService,
+  'location': locationService
 };
 
 //class DataService {
@@ -51,6 +53,7 @@ const mapping = {
     mapping[type].move(id, location);
   }
 
+  
 //}
 
 //exports.dataService = new DataService();

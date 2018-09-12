@@ -55,17 +55,14 @@ class EditLocation extends Component {
     super(props);   
     this.state = {
       location:{ name: '',desc: '' },
-      //hasInstruments: false,
     }   
   }
 
   componentDidMount() {
     const { match } = this.props;
     let id = match.params.id;
-    console.log(id)
-    let location = locationService.getById(id);
-    //let instruments = instrumentService.getInstrumentsByLocationId(id);    
-    this.setState({ location: location });//, hasInstruments: instruments.length>0})
+    let location = locationService.getById(id);   
+    this.setState({ location: location });
   }
 
   componentDidUpdate(prevProps) {   
@@ -74,8 +71,7 @@ class EditLocation extends Component {
     if (id !== prevProps.match.params.id) {
       let id = this.props.match.params.id;
       let location = locationService.getById(id);
-      //let instruments = instrumentService.getInstrumentsByLocationId(id);
-      this.setState({ location: location });//, hasInstruments: instruments.length>0})
+      this.setState({ location: location });
     }
   }
 
@@ -92,8 +88,6 @@ class EditLocation extends Component {
     const { handleEditLocation } = this.props;
     locationService.update(location);
     handleEditLocation(location);    
-    //push('/instruments/' + this.state.location.name);
-    //push('/instruments');
   }
 
   handleCancelClick = event => {
@@ -103,18 +97,14 @@ class EditLocation extends Component {
 
   handleDelete = event => {
     const { location } = this.state;
-    //const { handleDeleteLocation } = this.props;
     locationService.remove(location.id);
-    //console.log('deleting location');
-    //handleDeleteLocation(location.id);
     const { history:{ push } } = this.props;
-    push('/instruments');
+    push('/locations');
   }
 
   render() {
     const { classes } = this.props;
     const { location } = this.state;
-    //sconsole.log(hasInstruments)
     return (
       <div>
         <div className={classes.root}>Edit {location.name}</div>

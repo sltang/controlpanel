@@ -89,7 +89,7 @@ class AddLocation extends Component {
     const { location } = this.state;
     return (
       <div>
-        <div className={classes.root}>Create Instrument</div>
+        <div className={classes.root}>Create Location</div>
         <form className={classes.container} noValidate autoComplete="off">
           <TextField
             id="name"

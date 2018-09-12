@@ -10,7 +10,7 @@ import ViewProject from './project/view';
 import EditProject from './project/edit';
 import AddLocation from './location/add';
 import EditLocation from './location/edit';
-import MyPivotTable from '../pivottable/pivottable';
+import ListLocation from './location/list'
 import * as ColumnData from './columndata';
 // const MainContent = () => (
 //     <BrowserRouter>
@@ -61,31 +61,7 @@ import * as ColumnData from './columndata';
 //   />
 // );
 
-// const instrumentColumnData = [
-//   { id: 'status', numeric: false, disablePadding: true, label: 'Status' },
-//   { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
-//   { id: 'project', numeric: false, disablePadding: false, label: 'Project' },
-//   { id: 'location', numeric: false, disablePadding: false, label: 'Location' },
-//   { id: 'application', numeric: false, disablePadding: false, label: 'Application' },
-//   { id: 'type', numeric: false, disablePadding: false, label: 'Type' },
-//   { id: 'controller', numeric: false, disablePadding: false, label: 'Controller' }
-// ];
-
-// const projectColumnData = [
-//   { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
-//   { id: 'group', numeric: false, disablePadding: false, label: 'Group' },
-//   { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
-//   { id: 'createDate', numeric: false, disablePadding: false, label: 'Creation Date' },
-//   { id: 'createdBy', numeric: false, disablePadding: false, label: 'Created By' }
-// ];
-
 class MainContent extends Component {
-
-  constructor(props) {
-    super(props);
-  }
-
-
 
   render() {
     const {type, handleAddLocation, handleEditLocation, handleDeleteInstrument } = this.props;
@@ -121,10 +97,15 @@ class MainContent extends Component {
         <Route exact path='/location/add' render={(props) => (<AddLocation {...props} handleAddLocation={handleAddLocation}/>
         )}/>
 
+        <Route path='/location/edit/:id' component={EditLocation} />
+
          <Route path='/location/:id' render={(props) => (<EditLocation {...props} handleEditLocation={handleEditLocation} />
         )}/>
 
-        <Route path='/pivot-table' component={MyPivotTable} />
+         <Route exact path='/locations' render={(props) => (
+            <ListLocation {...props} columnData={ColumnData.LocationColumnData} type={type} />
+        )}/>
+
       </Switch>
     )
   }

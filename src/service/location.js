@@ -1,10 +1,12 @@
-const locations = [
-    {id:1, name:'San Francisco', desc:'San Francisco Location'},
-    {id:2, name:'Santa Clara', desc:'Agilent Headquarters'},
-    {id:3, name:'Sunnyvale', desc:'Sunnyvale Lab'}
-  ]
+const locations = []
 
 export const getAll = () => {
+    if (locations.length === 0) {
+        for (let i=1; i<11; i++) {
+            let loc = {id:i, name:'Location ' + i, desc:'Location ' + i + ' description', createDate:'2018-05-23 15:50:33-07:00', createdBy:'User '+i}
+            locations.push(loc)
+        }        
+    }
     return locations;
 }
 

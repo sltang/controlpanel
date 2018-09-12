@@ -1,1 +1,11 @@
+__mocks__
+__tests__
+Dockerfile
+.dockerignore
+.gitignore
+README.md
+build
 node_modules
+yarn.lock
+run.sh
+edge-envoy

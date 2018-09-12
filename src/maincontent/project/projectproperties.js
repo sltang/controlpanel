@@ -50,22 +50,22 @@ class ProjectProperties extends Component {
         return (
             <div>
                 <Grid container spacing={8}>
-                    <Grid item xs={12} sm={2}>
+                    <Grid item xs={4}>
                         <div className={classes.paper}>Name:</div>
                     </Grid>
-                    <Grid item xs={12} sm={10}>
+                    <Grid item xs={8}>
                         <div className={classes.paper}>{project.name ? project.name : ''}</div>
                     </Grid>
-                    <Grid item xs={12} sm={2}>
+                    <Grid item xs={4}>
                         <div className={classes.paper}>Project folder path:</div>
                     </Grid>
-                    <Grid item xs={12} sm={10}>
+                    <Grid item xs={8}>
                         <div className={classes.paper}>{project.folderPath}</div>
                     </Grid>
-                    <Grid item xs={12} sm={2}>
+                    <Grid item xs={4}>
                         <div className={classes.paper}>Description:</div>
                     </Grid>
-                    <Grid item xs={12} sm={10}>
+                    <Grid item xs={8}>
                     <TextField
                         id="desc"
                         label=""
@@ -85,28 +85,28 @@ class ProjectProperties extends Component {
                     </ListItem>
                     <Collapse in={this.state.detailsOpen} timeout="auto" unmountOnExit>
                         <Grid container spacing={8} className={classes.detailsItem}>
-                            <Grid item xs={12} sm={2}>
+                            <Grid item xs={4}>
                                 <div className={classes.paper}>Project ID:</div>
                             </Grid>
-                            <Grid item xs={12} sm={10}>
+                            <Grid item xs={8}>
                                 <div className={classes.paper}>{project.id}</div>
                             </Grid>
-                            <Grid item xs={12} sm={2}>
+                            <Grid item xs={4}>
                                 <div className={classes.paper}>Created:</div>
                             </Grid>
-                            <Grid item xs={12} sm={10}>
+                            <Grid item xs={8}>
                                 <div className={classes.paper}>{project.createDate}</div>
                             </Grid>
-                            <Grid item xs={12} sm={2}>
+                            <Grid item xs={4}>
                                 <div className={classes.paper}>Modified:</div>
                             </Grid>
-                            <Grid item xs={12} sm={10}>
+                            <Grid item xs={8}>
                                 <div className={classes.paper}>{project.modified}</div>
                             </Grid>
-                            <Grid item xs={12} sm={2}>
+                            <Grid item xs={4}>
                                 <div className={classes.paper}>Modified by:</div>
                             </Grid>
-                            <Grid item xs={12} sm={10}>
+                            <Grid item xs={8}>
                                 <div className={classes.paper}>{project.modifiedBy}</div>
                             </Grid>
                         </Grid>

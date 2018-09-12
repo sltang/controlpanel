@@ -1,6 +1,9 @@
 const projects = [
   {id:1, name:'Project 1', group:'Group 1', desc: 'Project 1 description', createDate: '2018-05-23 15:50:54-07:00', createdBy: 'SYSTEM', folderPath:'C:\\CDSProjects\\Project 1', modified:'2018-05-23 15:50:54-07:00', modifiedBy:'SYSTEM', application:'OpenLab CDS'},
   {id:2, name:'Project 2', group:'Group 1', desc: 'Project 2 description', createDate: '2018-05-28 15:52:57-07:00', createdBy: 'SYSTEM', folderPath:'C:\\CDSProjects\\Project 2', modified:'2018-05-23 15:52:54-07:00', modifiedBy:'SYSTEM', application:'OpenLab CDS'},
+  {id:3, name:'Project 3', group:'Group 1', desc: 'Project 3 description', createDate: '2018-05-23 15:50:54-07:00', createdBy: 'SYSTEM', folderPath:'C:\\CDSProjects\\Project 3', modified:'2018-05-23 15:50:54-07:00', modifiedBy:'SYSTEM', application:'OpenLab CDS'},
+  {id:4, name:'Project 4', group:'Group 1', desc: 'Project 4 description', createDate: '2018-05-28 15:52:57-07:00', createdBy: 'SYSTEM', folderPath:'C:\\CDSProjects\\Project 4', modified:'2018-05-23 15:52:54-07:00', modifiedBy:'SYSTEM', application:'OpenLab CDS'},
+
 ]
 
 //class InstrumentService {

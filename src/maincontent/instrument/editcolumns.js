@@ -23,6 +23,12 @@ const styles = theme => ({
       buttons: {
         dispaly: 'flex',
         flexDirection: 'column'
+      },
+      editButton: {
+          width: '105px',
+          textTransform: 'none',
+          fontSize: '0.75rem',
+          fontWeight: '400'
       }
 })
 
@@ -57,7 +63,7 @@ class EditColumns extends Component {
     handleChange = (event, index) => {
         let checked = this.state.checked;
         checked[index] = event.target.checked;
-        this.setState({checked, checked});
+        this.setState({checked});
     }
 
     handleSelect = (e, index) => {
@@ -98,10 +104,9 @@ class EditColumns extends Component {
     render() {
         const { classes, columnData } = this.props;
         const { open, checked, selected } = this.state;
-        console.log(selected)
         return (
             <div>
-                <Button variant="outlined" onClick={this.handleClick}>Edit Columns</Button>
+                <Button className={classes.editButton} variant="outlined" onClick={this.handleClick}>Edit Columns</Button>
                 <Dialog
                     disableBackdropClick
                     disableEscapeKeyDown

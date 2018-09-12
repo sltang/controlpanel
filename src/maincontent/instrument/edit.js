@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -49,49 +48,32 @@ const styles = theme => ({
   },
 })
 
-const types = [
-  {
-    value: 'Agilent GC & GC/MS Systems',
-    label: 'Agilent GC & GC/MS Systems',
-  },
-  {
-    value: 'Agilent LC & LC/MS',
-    label: 'Agilent LC & LC/MS',
-  },
-  {
-    value: 'Agilent AD System',
-    label: 'Agilent AD System',
-  },
-  {
-    value: 'Virtual Instruments',
-    label: 'Virtual Instruments',
-  },
-]
+const types = ['Agilent GC & GC/MS Systems', 'Agilent LC & LC/MS', 'Agilent AD System','Virtual Instruments']
 
-const projects = [
-  { value: 'None', label: '' },
-  { value: 'Project 1', label: 'Project 1' },
-  { value: 'Project 2', label: 'Project 2' },
-]
+// const projects = [
+//   { value: 'None', label: '' },
+//   { value: 'Project 1', label: 'Project 1' },
+//   { value: 'Project 2', label: 'Project 2' },
+// ]
 
 class EditInstrument extends Component {
 
   constructor(props) {
-    super(props);
-    //const { match } = this.props;
-    //let instruments = dataService.getById('instrument', match.params.id);    
-    this.state = {
-      //instrument:instruments.length > 0 ? instruments[0] : {},
-      //alwaysUseDefaultProject: instruments.length > 0 && instruments[0].project === 'None'
-    }
+    super(props);   
+    this.state = {}
   }
 
   componentDidMount() {
     const { match } = this.props;
     let instruments = dataService.getById('instrument', match.params.id);
+    let projects = dataService.getAll('project')
+    let projs = projects.filter(project => project.name === instruments[0].project)
+    let projectId = projs.length > 0 ? projs[0].id : ''
     this.setState({
       instrument:instruments.length > 0 ? instruments[0] : {},
-      alwaysUseDefaultProject: instruments.length > 0 && instruments[0].project === 'None'
+      alwaysUseDefaultProject: instruments.length > 0 && instruments[0].project === '',
+      projects,
+      projectId
     })
   }
 
@@ -100,7 +82,7 @@ class EditInstrument extends Component {
       let instruments = dataService.getById('instrument', this.props.match.params.id);
       this.setState({
         instrument:instruments.length > 0 ? instruments[0] : {},
-        alwaysUseDefaultProject: instruments.length > 0 && instruments[0].project === 'None'
+        alwaysUseDefaultProject: instruments.length > 0 && instruments[0].project === ''
       })
     }
   }
@@ -114,16 +96,18 @@ class EditInstrument extends Component {
   };
 
   handleDefaultProjectChange = event => {
-    this.setState({alwaysUseDefaultProject:event.target.value === 'None'})
+    this.setState({alwaysUseDefaultProject:event.target.value === ''})
     let instrument = this.state.instrument;
-    instrument.project = event.target.value;
+    let projs = this.state.projects.filter(project => project.id === event.target.value)
+    let projectName = projs.length > 0 ? projs[0].name : ''
+    instrument.project = projectName;
     this.setState({
       instrument: instrument,
+      projectId:event.target.value
     });
   };
 
   handleOKClick = event => {
-    //console.log(this.state.instrument);
     const { history:{ push } } = this.props;
     dataService.save('instrument',this.state.instrument);   
     push('/instruments'); 
@@ -136,8 +120,9 @@ class EditInstrument extends Component {
 
   render() {
     const { classes } = this.props;
-    const { instrument } = this.state;
+    const { instrument, projects, projectId } = this.state;    
     if (instrument !== undefined) {
+      //console.log(projectId)
       return (
         <div>
           <div className={classes.root}>Edit {instrument.name}</div>
@@ -195,9 +180,9 @@ class EditInstrument extends Component {
               }}
               margin="normal"
             >
-              {types.map(option => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              {types.map((type, index) => (
+                <MenuItem key={index} value={type}>
+                  {type}
                 </MenuItem>
               ))}
             </TextField>
@@ -214,7 +199,7 @@ class EditInstrument extends Component {
               id="select-project"
               select
               label="Default project"            
-              value={this.state.instrument.project}
+              value={projectId}
               className={classes.textField}
               onChange={this.handleDefaultProjectChange}
               SelectProps={{
@@ -225,9 +210,10 @@ class EditInstrument extends Component {
               }}
               margin="normal"
             >
-              {projects.map(option => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              <MenuItem value={''}>None</MenuItem>
+              {projects.map(project => (
+                <MenuItem key={project.id} value={project.id}>
+                  {project.name}
                 </MenuItem>
               ))}
             </TextField>

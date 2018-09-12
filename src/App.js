@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+//import ClippedDrawer from './appdrawer/clippeddrawer'
 
 import Login from './login/login';
 

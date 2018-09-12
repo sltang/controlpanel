@@ -77,6 +77,7 @@ const styles = theme => ({
 const types = {
   instruments : {label: 'Instruments', name: 'instrument'},
   projects: {label: 'Projects', name: 'project'},
+  locations:  {label: 'Locations', name: 'location'},
 }
 
 class ClippedDrawer extends Component {
@@ -85,7 +86,6 @@ class ClippedDrawer extends Component {
     this.state = {
       open: true,
       type: types['instruments'],
-      //treeUpdateCount:0,
       newLocation: {},
       updatedLocation: {},
       deletedInstrumentIds: []
@@ -104,16 +104,6 @@ class ClippedDrawer extends Component {
   handleCreate = event => {
     const { history : {push} } = this.props;
     push('/'+this.state.type.name+'/add');
-  }
-
-  handleCreateLocation = event => {
-    const { history : {push} } = this.props;
-    push('/location/add');
-  }
-
-  handlePivotTable = event => {
-    const { history : {push} } = this.props;
-    push('/pivot-table');
   }
 
   handleAddLocation = (location) => {
@@ -138,7 +128,6 @@ class ClippedDrawer extends Component {
   }
 
   handleDeleteInstrument = (ids) => {
-    //console.log(ids);
     this.setState({deletedInstrumentIds:ids})
   }
 
@@ -148,14 +137,14 @@ class ClippedDrawer extends Component {
 
   render() {
     const { classes } = this.props;
-    const { open, type, newLocation, updatedLocation, deletedInstrumentIds } = this.state;
+    const { type } = this.state;
 
     return (
 
       <div className={classes.root}>
 
         <MenuAppBar onTypeChange={this.handleTypeChange} />
-        <Hidden smDown implementation="css">
+        {/* <Hidden smDown implementation="css">
         <Drawer
           variant="permanent"
           classes={{
@@ -174,13 +163,11 @@ class ClippedDrawer extends Component {
           {open ? 
               (<div>
               <div onClick={this.handleCreate} className={classes.create}>Create {type.name}</div>
-              <div onClick={this.handleCreateLocation} className={classes.create}>Create location</div>
-              <div onClick={this.handlePivotTable} className={classes.create}>Pivot Table</div>
               </div>)
               : '' }
           <TreeNavigation type={type} open={open} newLocation={newLocation} updatedLocation={updatedLocation} deletedInstrumentIds={deletedInstrumentIds}/>
         </Drawer>
-        </Hidden>
+        </Hidden> */}
         <main className={classes.content}>
             <div className={classes.toolbar} />
             <MainContent type={type} handleAddLocation={this.handleAddLocation} handleEditLocation={this.handleEditLocation} handleDeleteInstrument={this.handleDeleteInstrument} />
@@ -198,5 +185,3 @@ ClippedDrawer.propTypes = {
 };
 
 export default withStyles(styles, { withTheme: true })(withRouter(ClippedDrawer));
-
-/*{this.state.open ? <NestedList type={type} /> : ''}*/

@@ -28,6 +28,7 @@ const styles = theme => ({
     display: '-webkit-flex',
     '-webkit-flex-direction': 'row',
     justifyContent: 'space-between',
+    fontSize:'20px'
   },
 
 });

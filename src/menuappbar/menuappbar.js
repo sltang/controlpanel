@@ -10,6 +10,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuLists from './menulists';
 import { withRouter } from 'react-router';
+import Button from '@material-ui/core/Button';
+import Popper from '@material-ui/core/Popper';
+import MenuList from '@material-ui/core/MenuList';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
 
 const styles = theme => ({
   root: {
@@ -19,7 +24,7 @@ const styles = theme => ({
     position: 'relative',
     display: 'flex',
     justifyContent: 'space-between',
-    
+
   },
   flex: {
     flex: 1,
@@ -35,8 +40,9 @@ const styles = theme => ({
 });
 
 const menus = [
-  {name:'instruments', label: 'Instruments', url:'/instruments', submenus: []},
-  {name: 'projects', label: 'Projects', url: '/projects', submenus: [{id:'add-project', label:'Add Project', url:'/project/add'}]},
+  { name: 'instruments', label: 'Instruments', url: '/instruments', submenus: [] },
+  { name: 'projects', label: 'Projects', url: '/projects', submenus: [{ id: 'add-project', label: 'Add Project', url: '/project/add' }] },
+  { name: 'locations', label: 'Locations', url: '/locations', submenus: [] },
 ];
 
 class MenuAppBar extends Component {
@@ -45,86 +51,216 @@ class MenuAppBar extends Component {
     super(props);
     this.state = {
       auth: true,
-      anchorEl: null,
+      //anchorEl: null,
       createAnchorEl: null
     };
-    this.onTypeChange = this.onTypeChange.bind(this);
+    //this.onTypeChange = this.onTypeChange.bind(this);
   }
 
-  handleChange = (event, checked) => {
-    this.setState({ auth: checked });
-  };
+  // handleChange = (event, checked) => {
+  //   this.setState({ auth: checked });
+  // };
 
-  handleMenu = event => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
+  // handleMenu = event => {
+  //   this.setState({ anchorEl: event.currentTarget });
+  // };
+
+  // handleInstrumentMenuMouseOver = event => {
+  //   this.setState({ instrumentEl: event.currentTarget });
+  // }
+
+  // handleAddInstrument = event => {
+  //   this.setState({ instrumentEl: null });
+  //   const { history: { push } } = this.props;
+  //   push('/instrument/add');
+  // }
+
+  // handleInstrumentMenuClick = () => {
+  //   const { history: { push } } = this.props;
+  //   push('/instruments');
+  // }
+
+  // handleInstrumentMouseLeave = event => {
+  //   this.setState({ instrumentEl: null });
+  // }
+
+  // handleProjectMenuMouseOver = event => {
+  //   this.setState({ projectEl: event.currentTarget });
+  // }
+
+  // handleAddProject = event => {
+  //   this.setState({ projectEl: null });
+  //   const { history: { push } } = this.props;
+  //   push('/project/add');
+  // }
+
+  // handleProjectMenuClick = () => {
+  //   const { history: { push } } = this.props;
+  //   push('/projects');
+  // }
+
+  // handleProjectMouseLeave = event => {
+  //   this.setState({ projectEl: null });
+  // }
+
+  handleMenuMouseOver = (event, el) => {
+    this.setState({ [el]: event.currentTarget });
+  }
+
+  handleAdd = (el, path)  => {
+    this.setState({ [el]: null });
+    const { history: { push } } = this.props;
+    push(path);
+  }
+
+  handleMenuClick = (path, type) => {
+    this.props.onTypeChange(type);
+    const { history: { push } } = this.props;
+    push(path);
+
+  }
+
+  handleMouseLeave = el => {
+    this.setState({ [el]: null });
+  }
 
   handleCreate = event => {
-    this.setState({ createAnchorEl: event.currentTarget });
+    //this.setState({ createAnchorEl: event.currentTarget });
+    const { history: { push } } = this.props;
+    push('/');
   }
 
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
 
-  handleCreateClose = () => {
-    this.setState({ createAnchorEl: null });
-  };
-
-  onTypeChange(type) {
-    const { history:{ push }, onTypeChange} = this.props;
-    push('/'+type);
-    onTypeChange(type);
-  }
+  // handleCreateClose = () => {
+  //   this.setState({ createAnchorEl: null });
+  // };
 
   render() {
     const { classes } = this.props;
-    const { auth, anchorEl, createAnchorEl } = this.state;
-    const open = Boolean(anchorEl);
+    const { createAnchorEl, instrumentEl, projectEl, locationEl } = this.state;
     const openCreate = Boolean(createAnchorEl);
-
     return (
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
 
-        <AppBar position="fixed" className={classes.appBar}>
-          <Toolbar>
+          <IconButton style={{ 'outline': 'none' }}
+            className={classes.menuButton} aria-owns={openCreate ? 'create-menu' : null} onClick={this.handleCreate} color="inherit" aria-label="Menu"
+          >
+            <MenuIcon />
+          </IconButton>
+          <div onMouseLeave={e => this.handleMouseLeave('instrumentEl')}>
+            <Button
+              aria-owns={instrumentEl ? 'instrument-menu' : null}
+              aria-haspopup="true"
+              onMouseOver={e => this.handleMenuMouseOver(e, 'instrumentEl')}
+              onClick={e => this.handleMenuClick('/instruments', 'instruments')}
+              color="inherit"
+              style={{ 'outline': 'none' }}
+            >
+              Instruments
+              </Button>
+            <Popper open={Boolean(instrumentEl)} anchorEl={instrumentEl} transition placement={'bottom-start'} disablePortal>
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  id="instrument-menu"
+                >
+                  <Paper style={{backgroundColor:'#384350'}}>                    
+                      <MenuList>
+                        <MenuItem onClick={e => this.handleAdd('instrumentEl', '/instrument/add')} style={{ color:'#fff'}}>Add Instrument</MenuItem>
+                      </MenuList>                    
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </div>
+          <div onMouseLeave={e => this.handleMouseLeave('projectEl')}>
+            <Button
+              aria-owns={projectEl ? 'project-menu' : null}
+              aria-haspopup="true"
+              onMouseOver={e => this.handleMenuMouseOver(e, 'projectEl')}
+              onClick={e => this.handleMenuClick('/projects', 'projects')}
+              color="inherit"
+              style={{ 'outline': 'none' }}
+            >
+              Projects
+              </Button>
+            <Popper open={Boolean(projectEl)} anchorEl={projectEl} transition placement={'bottom-start'} disablePortal>
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  id="project-menu"
+                >
+                  <Paper style={{backgroundColor:'#384350'}}>                    
+                      <MenuList>
+                        <MenuItem onClick={e => this.handleAdd('projectEl', '/project/add')} style={{ color:'#fff'}}>Add Project</MenuItem>
+                      </MenuList>                    
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </div>
+          <div onMouseLeave={e => this.handleMouseLeave('locationEl')}>
+            <Button
+              aria-owns={locationEl ? 'location-menu' : null}
+              aria-haspopup="true"
+              onMouseOver={e => this.handleMenuMouseOver(e, 'locationEl')}
+              onClick={e => this.handleMenuClick('/locations', 'locations')}
+              color="inherit"
+              style={{ 'outline': 'none' }}
+            >
+              Locations
+              </Button>
+            <Popper open={Boolean(locationEl)} anchorEl={locationEl} transition placement={'bottom-start'} disablePortal>
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  id="location-menu"
+                >
+                  <Paper style={{backgroundColor:'#384350'}}>                    
+                      <MenuList>
+                        <MenuItem onClick={e => this.handleAdd('locationEl', '/location/add')} style={{ color:'#fff'}}>Add Location</MenuItem>
+                      </MenuList>                    
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </div>
 
+          {/* {auth && (
+            <div>
               <IconButton
-                className={classes.menuButton} aria-owns={openCreate ? 'create-menu' : null} onClick={this.handleCreate} color="inherit" aria-label="Menu"
+                aria-owns={anchorEl ? 'menu-appbar' : null}
+                aria-haspopup="true"
+                onMouseOver={this.handleMenu}
+                color="inherit"
               >
-                <MenuIcon />
+                <AccountCircle />
               </IconButton>
-              <MenuLists menus={menus} onTypeChange={this.onTypeChange}/>
-            {auth && (
-              <div>
-                <IconButton
-                  aria-owns={open ? 'menu-appbar' : null}
-                  aria-haspopup="true"
-                  onClick={this.handleMenu}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={open}
-                  onClose={this.handleClose}
-                >
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                </Menu>
-              </div>
-            )}
-          </Toolbar>
-        </AppBar>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={this.handleClose}
+              >
+                <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+                <MenuItem onClick={this.handleClose}>My account</MenuItem>
+              </Menu>
+            </div>
+          )} */}
+        </Toolbar>
+      </AppBar>
 
     );
   }

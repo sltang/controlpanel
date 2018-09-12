@@ -35,30 +35,33 @@ class SortableList extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {selectedIndex:-1}
+    this.handleClick = this.handleClick.bind(this)
   }
 
-  componentDidMount() {
-
+  handleClick(e, index) {
+    const {type} = this.props
+    this.setState({selectedIndex: index})
+    this.props.onSelect(e, type, index)
   }
 
   render() {
     const { classes, reasons, type, onDelete, onMoveUp, onMoveDown } = this.props;
+    const {selectedIndex} = this.state
       return (  
-        <Grid container spacing={16}>
+        <Grid container spacing={8}>
             <Grid item xs={12} sm={12}>List of reasons:</Grid>
-            <Grid item xs={12} sm={10}>
+            <Grid item xs={12} sm={11}>
                 <List className={classes.root}>
                     {reasons.map( ( reason, index ) => {
-                        return <ListItem button key={index} onClick={e => this.props.onSelect(e, type, index)}>
+                        return <ListItem button key={index} onClick={e => this.handleClick(e, index)} style={index === selectedIndex ? {backgroundColor:'#eeeeee'}:{}}>
                             <ListItemText primary={reason.text} />
                     </ListItem>
                     })}              
                 </List>
             </Grid>
             
-            <Grid item xs={12} sm={2}>
+            <Grid item xs={12} sm={1}>
                 <div className={classes.buttons}>
                     <Button variant="outlined" size="small" className={classes.button} onClick={e => onDelete(e, type)}>
                     Delete

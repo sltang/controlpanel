@@ -1,5 +1,7 @@
+import {STATES} from './instrument/dashboard/piechartpane/piechart'
+
 export const InstrumentColumnData = [
-  { id: 'status', numeric: false, disablePadding: true, label: 'Status' },
+  { id: 'status', numeric: false, disablePadding: true, label: 'Status', backgroundColor:(s) => STATES[s] },
   { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
   { id: 'project', numeric: false, disablePadding: false, label: 'Project' },
   { id: 'location', numeric: false, disablePadding: false, label: 'Location' },
@@ -17,6 +19,13 @@ export const InstrumentColumnData = [
 export const ProjectColumnData = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
   { id: 'group', numeric: false, disablePadding: false, label: 'Group' },
+  { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
+  { id: 'createDate', numeric: false, disablePadding: false, label: 'Creation Date' },
+  { id: 'createdBy', numeric: false, disablePadding: false, label: 'Created By' }
+];
+
+export const LocationColumnData = [
+  { id: 'name', numeric: false, disablePadding: true, label: 'Name' },,
   { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
   { id: 'createDate', numeric: false, disablePadding: false, label: 'Creation Date' },
   { id: 'createdBy', numeric: false, disablePadding: false, label: 'Created By' }

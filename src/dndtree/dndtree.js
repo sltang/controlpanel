@@ -139,7 +139,6 @@ class DnDTree extends Component {
     }
 
     componentDidMount() {
-      console.log('componentDidMount')
       const {type} = this.props;
       let treeData = dataService.getTree(type.name)
       this.setState({

@@ -9,7 +9,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
@@ -22,12 +21,13 @@ import Grid from '@material-ui/core/Grid';
 import { withRouter } from 'react-router';
 import MyTable from '../table';
 import * as dataService from '../../service/dataservice.js';
+import {ActivityLogColumnData } from '../columndata'
 
-const ActivityLogColumnData = [
-  { id: 'dateTime', numeric: false, disablePadding: true, label: 'Date/Time' },
-  { id: 'user', numeric: false, disablePadding: false, label: 'User' },
-  { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
-];
+// const ActivityLogColumnData = [
+//   { id: 'dateTime', numeric: false, disablePadding: true, label: 'Date/Time' },
+//   { id: 'user', numeric: false, disablePadding: false, label: 'User' },
+//   { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
+// ];
 
 const styles = theme => ({
   root: {
@@ -40,7 +40,7 @@ const styles = theme => ({
     justifyContent: 'space-between',
     margin: theme.spacing.unit,
     minWidth: 240,
-    marginLeft: theme.spacing.unit * 10
+    marginLeft: theme.spacing.unit * 4
 
   },
   selectEmpty: {
@@ -50,12 +50,14 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: theme.spacing.unit * 2,
+    fontSize:'1rem'
   },
   start: {
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: theme.spacing.unit * 2,
-    marginLeft: theme.spacing.unit * 4
+    marginLeft: theme.spacing.unit * 4,
+    fontSize:'1rem'
   },
   button: {
     margin: theme.spacing.unit,
@@ -86,9 +88,9 @@ class ViewInstrument extends Component {
     this.state = {
       open: false,
       projectId: 1,
-      projectName: 'Project 1',
-      selectedProjectId: 1,
-      projects: [{id:1, name:'Project 1'}, {id:2, name:'Project 2'}],
+      projectName: '',
+      selectedProjectName: '',
+      projects: [],
       data: []
     };
   }
@@ -96,8 +98,9 @@ class ViewInstrument extends Component {
   componentDidMount() {
     const { match } = this.props;
     let instruments = dataService.getById('instrument', match.params.id);
+    let projects = dataService.getAll('project')
     if (instruments.length > 0) {
-      this.setState({ data:instruments[0]});
+      this.setState({ data:instruments[0], projects, projectName:instruments[0].project});
     }
   }
 
@@ -115,8 +118,8 @@ class ViewInstrument extends Component {
   };
 
   handleClickOpen = event  => {
-    if (event.target.value !== this.state.projectId ) {
-      this.setState({ open: true, selectedProjectId: event.target.value });
+    if (event.target.value !== this.state.projectName) {
+      this.setState({ open: true, selectedProjectName: event.target.value });
     }
   };
 
@@ -125,7 +128,7 @@ class ViewInstrument extends Component {
   };
 
   handleOkClose = event => {
-    this.setState({ open: false, projectId: this.state.selectedProjectId});
+    this.setState({ open: false, projectName: this.state.selectedProjectName});
   }
 
   handleStatusClick = event => {
@@ -153,19 +156,22 @@ class ViewInstrument extends Component {
         <div className={classes.head}><div>{data['name']}</div><div>{data['status']}</div></div>
         <div className={classes.start}>Start Instrument</div>
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="project">Project</InputLabel>
-          <Select
-            value={this.state.projectId}
-            onChange={this.handleClickOpen}
-            inputProps={{
-              name: 'project',
-              id: 'project',
-            }}
-          >
-            {this.state.projects.map(proj =>
-              <MenuItem key={proj.id} value={proj.id}>{proj.name}</MenuItem>
-            )}
-          </Select>
+          <div>
+            <InputLabel htmlFor="project">Project</InputLabel>
+            <Select
+              native
+              value={this.state.projectName}
+              onChange={this.handleClickOpen}
+              inputProps={{
+                name: 'project',
+                id: 'project',
+              }}
+            >
+              {this.state.projects.map((proj) =>
+                <option key={proj.id} value={proj.name}>{proj.name}</option>
+              )}
+            </Select>
+            </div>
           <div>
             <Button variant="outlined" color="primary" className={classes.button}>
               Launch
@@ -222,72 +228,71 @@ class ViewInstrument extends Component {
             <ListItemText inset primary="Details" />            
           </ListItem>
           <Collapse in={this.state.detailsOpen} timeout="auto" unmountOnExit>
-            <Grid container spacing={16} className={classes.detailsItem}>
-
-              <Grid item xs={12} sm={3}>
+            <Grid container spacing={8} className={classes.detailsItem}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Description:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.description?this.state.data.description:''}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Location:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.location?this.state.data.location:''}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Created by:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.createdBy?this.state.data.createdBy:'SYSTEM'}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Creation date:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.created?this.state.data.created:''}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Last configured by:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.lastConfiguredBy?this.state.data.lastConfiguredBy:''}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Last configured date/time:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.lastConfigured?this.state.data.lastConfigured:'2018-05-23 15:50:33-07:00'}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Application:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.application}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Instrument controller:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.controller}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Instrument type:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.type}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Id:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}>{this.state.data.id}</div>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={4}>
                 <div className={classes.paper}>Owner contact information:</div>
               </Grid>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={8}>
                 <div className={classes.paper}></div>
               </Grid>
 
