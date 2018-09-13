@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {STATES}  from './piechartpane/piechart';
 import DevicesOutlinedIcon from '@material-ui/icons/DevicesOutlined'
+import { convertHexToRGB } from '@material-ui/core/styles/colorManipulator';
 
 const styles = theme => ({
     overview: {
@@ -74,30 +75,23 @@ class Workload extends Component {
         }
     }
 
+    hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return 'rgb('+Math.floor(parseInt(result[1], 16)/2)+','+Math.floor(parseInt(result[2], 16)/2)+','+Math.floor(parseInt(result[3], 16)/2)+')'
+    }
+
     render() {
         const { classes, instrument, handleClose} = this.props;
         //const { workload } = this.state;//do not use state
         return (
             <div className={classes.overview}>
-                <div className={classes.head}>
-                    
+                <div className={classes.head}>                    
                     <div className={classes.flexRow}>
                         <DevicesOutlinedIcon />
                         <div className={classes.name}>{instrument.name}</div>
-                        {/* <div className={classes.flexColumn}>
-                            <div className={classes.name}>{instrument.name}</div>
-                            <div className={classes.flexRow}><div className={classes.square} style={{backgroundColor:STATES[instrument.status]}}></div> {instrument.status}</div>
-                        </div> */}
-                    </div>
-                    {/* <div onClick={e => {handleClose(instrument.id)}}><ClearIcon /></div> */}                    
+                    </div>                 
                 </div>
-                <div className={classes.status} style={{backgroundImage:'linear-gradient(to right,' +STATES[instrument.status] +',white)'}}>{instrument.status}</div>
-                {/* <div className={classes.overviewHead}>Analysis Workload Overview</div>
-                <div className={classes.workloadContainer}>
-                {instrument.data.map((wl, index) => {
-                    return <div key={index} className={classes.workload}><div style={{color:COLORS[index]}}>{wl.value}</div><div>{wl.name}</div></div>
-                })}
-                </div> */}
+                <div className={classes.status} style={{backgroundImage:'linear-gradient(to right,' +this.hexToRgb(STATES[instrument.status]) +','+STATES[instrument.status]+')'}}>{instrument.status}</div>
             </div>
         )
     }
