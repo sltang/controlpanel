@@ -18,7 +18,7 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-
+import {STATES} from './dashboard/piechartpane/piechart.js'
 
 const styles = theme => ({
   head: {
@@ -316,7 +316,7 @@ class ListInstrument extends React.Component {
                   }}
                 >
                   <option value="" />
-                  {states.map((state, index) => {
+                  {Object.keys(STATES).sort().map((state, index) => {
                     return <option key={index} value={state.name}>{state.name}</option>
                   })}
                 </Select>

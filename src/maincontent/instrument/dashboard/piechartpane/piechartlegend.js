@@ -30,7 +30,7 @@ class PieChartLegend extends Component {
         if (data !== undefined) {
             return (
                 <div className={classes.container}>
-                    {data.map((d, index) => {
+                    {data.sort((d1, d2) => {return d1.name < d2.name? -1: 1}).map((d, index) => {
                         return <div className={classes.item} key={index} onClick={e => handleArcClick(groupBy, d.name)}>{d.value + ' ' + d.name}</div>
                     })}
                 </div>
