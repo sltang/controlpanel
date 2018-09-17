@@ -18,10 +18,18 @@ const styles = theme => ({
   root: {
     width: '100%',
     marginTop: theme.spacing.unit * 3,
+    
   },
   tableWrapper: {
     overflowX: 'auto',
   },
+  hover:{
+    '&$hover:hover': {
+      backgroundColor:'#f5f5f5'
+    }
+  }
+
+  
 });
 
 class MyTable extends React.Component {
@@ -35,7 +43,6 @@ class MyTable extends React.Component {
       data: [...this.props.data],
       rowsPerPage: this.props.rowsPerPage === undefined ? 5 : this.props.rowsPerPage,
       noSelected: false,
-      //searchOn: false,
       searchValue: ''
     };
     this.handleSearch$ = new Subject();
@@ -87,7 +94,7 @@ class MyTable extends React.Component {
 
   componentDidMount() {
     let noSelected = this.props.noSelected !== undefined;
-    this.setState({ noSelected: noSelected })// data: this.props.data})    
+    this.setState({ noSelected: noSelected })   
     this.handleSearch$
       .pipe(
         debounceTime(500),
@@ -224,6 +231,7 @@ class MyTable extends React.Component {
                 return (
                   <TableRow
                     hover
+                    classes={{hover:classes.hover}}
                     onClick={event => this.handleClick(event, n.id)}
                     role="checkbox"
                     aria-checked={isSelected}
@@ -231,7 +239,6 @@ class MyTable extends React.Component {
                     key={n.id}
                     selected={isSelected}
                   >
-
                     {this.state.noSelected ? <TableCell padding="checkbox" /> :
                       <TableCell padding="checkbox">
                         <Checkbox checked={isSelected} />

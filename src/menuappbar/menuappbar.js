@@ -7,8 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import MenuLists from './menulists';
+import classNames from 'classnames';
 import { withRouter } from 'react-router';
 import Button from '@material-ui/core/Button';
 import Popper from '@material-ui/core/Popper';
@@ -39,11 +38,11 @@ const styles = theme => ({
   },
 });
 
-const menus = [
-  { name: 'instruments', label: 'Instruments', url: '/instruments', submenus: [] },
-  { name: 'projects', label: 'Projects', url: '/projects', submenus: [{ id: 'add-project', label: 'Add Project', url: '/project/add' }] },
-  { name: 'locations', label: 'Locations', url: '/locations', submenus: [] },
-];
+// const menus = [
+//   { name: 'instruments', label: 'Instruments', url: '/instruments', submenus: [] },
+//   { name: 'projects', label: 'Projects', url: '/projects', submenus: [{ id: 'add-project', label: 'Add Project', url: '/project/add' }] },
+//   { name: 'locations', label: 'Locations', url: '/locations', submenus: [] },
+// ];
 
 class MenuAppBar extends Component {
 
@@ -145,12 +144,13 @@ class MenuAppBar extends Component {
     return (
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-
-          <IconButton style={{ 'outline': 'none' }}
-            className={classes.menuButton} aria-owns={openCreate ? 'create-menu' : null} onClick={this.handleCreate} color="inherit" aria-label="Menu"
+          {/* <IconButton style={{ 'outline': 'none' }}
+            className={classes.menuButton} aria-owns={menuEl ? 'menu' : null} onClick={this.handleCreate} color="inherit" aria-label="Menu"
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
+          <button className="ag-navbar-btn" onClick={this.handleCreate} aria-owns={createAnchorEl ? 'menu' : null}>
+            <i className={classNames('ol-icon-font', 'icon-menu')}></i></button>
           <div onMouseLeave={e => this.handleMouseLeave('instrumentEl')}>
             <Button
               aria-owns={instrumentEl ? 'instrument-menu' : null}
@@ -178,16 +178,11 @@ class MenuAppBar extends Component {
             </Popper>
           </div>
           <div onMouseLeave={e => this.handleMouseLeave('projectEl')}>
-            <Button
-              aria-owns={projectEl ? 'project-menu' : null}
-              aria-haspopup="true"
-              onMouseOver={e => this.handleMenuMouseOver(e, 'projectEl')}
-              onClick={e => this.handleMenuClick('/projects', 'projects')}
-              color="inherit"
-              style={{ 'outline': 'none' }}
+            <button className="ag-navbar-btn" onMouseOver={e => this.handleMenuMouseOver(e, 'projectEl')} onClick={e => this.handleMenuClick('/projects', 'projects')}
+            aria-owns={projectEl ? 'project-menu' : null}
+            aria-haspopup="true"
             >
-              Projects
-              </Button>
+            <i className={classNames('ol-icon-font', 'icon-project')}></i></button>
             <Popper open={Boolean(projectEl)} anchorEl={projectEl} transition placement={'bottom-start'} disablePortal>
               {({ TransitionProps, placement }) => (
                 <Grow

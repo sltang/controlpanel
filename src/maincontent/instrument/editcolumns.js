@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames'
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -25,10 +26,12 @@ const styles = theme => ({
         flexDirection: 'column'
       },
       editButton: {
-          width: '105px',
-          textTransform: 'none',
-          fontSize: '0.75rem',
-          fontWeight: '400'
+        border: '1px solid #e1e3e5',
+        margin: '10px'
+        //   width: '105px',
+        //   textTransform: 'none',
+        //   fontSize: '0.75rem',
+        //   fontWeight: '400'
       }
 })
 
@@ -47,7 +50,7 @@ class EditColumns extends Component {
 
     handleCancel = event => {
         let checked = this.state.checked.map((_, index) => this.state.savedChecked[index])
-        this.setState({open: false, checked:checked })
+        this.setState({open: false, checked:checked, selected:-1 })
     }
 
     handleOk = event => {
@@ -106,7 +109,8 @@ class EditColumns extends Component {
         const { open, checked, selected } = this.state;
         return (
             <div>
-                <Button className={classes.editButton} variant="outlined" onClick={this.handleClick}>Edit Columns</Button>
+                <button className={classNames('btn', 'ag-btn-secondary', classes.editButton)} onClick={this.handleClick}>Edit Columns</button>
+                {/* <Button className={classes.editButton} variant="outlined" onClick={this.handleClick}>Edit Columns</Button> */}
                 <Dialog
                     disableBackdropClick
                     disableEscapeKeyDown
@@ -124,20 +128,24 @@ class EditColumns extends Component {
                     <DialogActions>
                     <div className={classes.buttons}>
                         <div>
-                        <Button onClick={this.handleMoveUp} disabled={selected === -1 || selected < 1} color="primary">
-                            Move Up
+                        <button className={classNames('btn', 'ag-btn-primary', classes.editButton)} onClick={this.handleMoveUp} disabled={selected === -1 || selected < 1}>Move Up</button>
+                        <button className={classNames('btn', 'ag-btn-primary', classes.editButton)} onClick={this.handleMoveDown} disabled={selected === -1 || selected > columnData.length - 2}>Move Down</button>
+                        {/* <Button onClick={this.handleMoveUp} disabled={selected === -1 || selected < 1} color="primary">
+                             Move Up
                         </Button>
                         <Button onClick={this.handleMoveDown} disabled={selected === -1 || selected > columnData.length - 2} color="primary">
-                            Move Down
-                        </Button>
+                             Move Down
+                        </Button> */}
                         </div>
                         <div>
-                        <Button onClick={this.handleOk} color="primary">
+                        <button className={classNames('btn', 'ag-btn-primary', classes.editButton)} onClick={this.handleOk}>OK</button>
+                        <button className={classNames('btn', 'ag-btn-secondary', classes.editButton)} onClick={this.handleCancel}>Cancel</button>
+                        {/* <Button onClick={this.handleOk} color="primary">
                             Ok
                         </Button>
                         <Button onClick={this.handleCancel} color="secondary">
                             Cancel
-                        </Button>
+                        </Button> */}
                         </div>
                     </div>
                     </DialogActions>

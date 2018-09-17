@@ -18,7 +18,9 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+import classNames from 'classnames'
 import {STATES} from './dashboard/piechartpane/piechart.js'
+
 
 const styles = theme => ({
   head: {
@@ -39,7 +41,7 @@ const styles = theme => ({
   breadCrumb: {
     display: 'flex', flexDirection: 'row',
     fontSize: '0.75rem',
-    fontWeight: '500',
+    fontWeight: 'bold',
     flexWrap: 'wrap'
   },
   breadCrumbItem: {
@@ -53,11 +55,19 @@ const styles = theme => ({
     marginLeft: '10px',
     marginRight: '10px'
   },
-  listGridIcons: {
+  listGridIcon: {
     color: '#384350',
-    fontSize: '48px'
+    fontSize: '48px',
+    fontWeight: 700
+  },
+   collapseExpandIcon: {
+     fontSize: '18px',
+  //   width: '8px',
+  //   height: '8px'
+   },
+  label:{
+    marginRight:'20px'
   }
-
 });
 
 class ListInstrument extends React.Component {
@@ -168,7 +178,7 @@ class ListInstrument extends React.Component {
   handleColumnsChange = (checked) => {
     const { columnData } = this.props;
     let filteredColumnData = columnData.filter((_, index) => checked[index])
-    this.setState({ filteredColumnData: filteredColumnData });
+    this.setState({ filteredColumnData });
   }
 
   handleView = (event, view) => {
@@ -199,7 +209,7 @@ class ListInstrument extends React.Component {
   handleClearGroupBy(key) {    
     const { groupBy, searchOn } = this.state
     delete groupBy[key]
-    //if search is on, groupBy first and apply filter by search by
+    //if search is on, groupBy first and then apply search filter
     if (Object.keys(groupBy).length === 0) {
       this.setState({ data: this.state.originalData, groupedInstruments: null })
     } else {
@@ -254,14 +264,16 @@ class ListInstrument extends React.Component {
   render() {
     const { classes, type, columnData } = this.props;
     const { data, filteredColumnData, view, groupBy, locations, states, types, groupedInstruments, originalData, searchOn } = this.state;
-    //console.log(data)
     if (locations === undefined) {
       return <div></div>
     } else
       return (
         <div>
           <div onClick={this.handPieChartClick}>
-            {this.state.pieChartOpen ? <ExpandLess /> : <ExpandMore />}
+            {/* {this.state.pieChartOpen ? <ExpandLess /> : <ExpandMore />} */}
+            {this.state.pieChartOpen ? <span className={classNames('ol-icon-font', 'icon-node-collapsed', classes.collapseExpandIcon)}></span> :  
+            <i className={classNames('ol-icon-font', 'icon-node-expanded',classes.collapseExpandIcon)}></i> }
+            
           </div>
           <Collapse in={this.state.pieChartOpen} timeout="auto" unmountOnExit>
             <div className={classes.pie}>
@@ -270,25 +282,36 @@ class ListInstrument extends React.Component {
           </Collapse>
           <Collapse in={!this.state.pieChartOpen} timeout="auto" unmountOnExit>
             <div className={classes.pie}>
-              <div>
-                <InputLabel htmlFor="location" style={{marginRight:'10px'}}>Location</InputLabel>
-                <Select
+              <div className={classNames('form-group', classes.breadCrumbItem)} >
+                {/* <InputLabel htmlFor="location" style={{marginRight:'10px'}}>Location</InputLabel> */}
+                <label className={classNames('label', classes.label)} htmlFor="location">Location</label>
+                {/* <Select
                   native
                   value={groupBy['location']?groupBy['location']:''}
                   onChange={e => { this.handleArcClick('location', '', e) }}
                   inputProps={{
                     name: 'Location',
                     id: 'location',
-                  }}
+                  }} 
                 >
                   <option value="" />
                   {locations.map((loc, index) => {
                     return <option key={index} value={loc.name}>{loc.name}</option>
                   })}
-                </Select>
+                </Select> */}
+                <select 
+                  className={classNames('form-control')}
+                  value={groupBy['location']?groupBy['location']:''}
+                  onChange={e => { this.handleArcClick('location', '', e) }}
+                >
+                  <option value="" />
+                  {locations.map((loc, index) => {
+                    return <option key={index} value={loc.name}>{loc.name}</option>
+                  })}
+                </select> 
               </div>
-              <div>
-                <InputLabel htmlFor="type" style={{marginRight:'10px'}}>Type</InputLabel>
+              <div className={classNames('form-group', classes.breadCrumbItem)}>
+                {/* <InputLabel htmlFor="type" style={{marginRight:'10px'}}>Type</InputLabel>
                 <Select
                   native
                   value={groupBy['type']?groupBy['type']:''}
@@ -302,10 +325,21 @@ class ListInstrument extends React.Component {
                   {types.map((type, index) => {
                     return <option key={index} value={type.name}>{type.name}</option>
                   })}
-                </Select>
+                </Select> */}
+                <label className={classNames('label', classes.label)} htmlFor="type">Type</label>
+                <select 
+                  className={classNames('form-control')}
+                  value={groupBy['type']?groupBy['type']:''}
+                  onChange={e => { this.handleArcClick('type', '', e) }}
+                >
+                  <option value="" />
+                  {types.map((type, index) => {
+                    return <option key={index} value={type.name}>{type.name}</option>
+                  })}
+                </select> 
               </div>
-              <div>
-                <InputLabel htmlFor="status" style={{marginRight:'10px'}}>Status</InputLabel>
+              <div className={classNames('form-group', classes.breadCrumbItem)}>
+                {/* <InputLabel htmlFor="status" style={{marginRight:'10px'}}>Status</InputLabel>
                 <Select
                   native
                   value={groupBy['status']?groupBy['status']:''}
@@ -316,10 +350,21 @@ class ListInstrument extends React.Component {
                   }}
                 >
                   <option value="" />
-                  {Object.keys(STATES).sort().map((state, index) => {
+                  {states.map((state, index) => {
                     return <option key={index} value={state.name}>{state.name}</option>
                   })}
-                </Select>
+                </Select> */}
+                <label className={classNames('label', classes.label)} htmlFor="status">Status</label>
+                <select 
+                  className={classNames('form-control')}
+                  value={groupBy['status']?groupBy['status']:''}
+                  onChange={e => { this.handleArcClick('status', '', e) }}
+                >
+                  <option value="" />
+                  {Object.keys(STATES).sort().map((state, index) => {
+                    return <option key={index} value={state}>{state}</option>
+                  })}
+                </select> 
               </div>
             </div>
           </Collapse>
@@ -333,10 +378,13 @@ class ListInstrument extends React.Component {
           </div>
           <div className={classes.head}>
             <Tooltip title="List View">
-              <div className={classes.headItem}><ListOutlinedIcon className={classes.listGridIcons} onClick={e => this.handleView(e, 'list')} /></div>
+              <div className={classes.headItem}>
+              <ListOutlinedIcon className={classes.listGridIcon} onClick={e => this.handleView(e, 'list')} />
+              {/* <i onClick={e => this.handleView(e, 'list')} className={classNames('ol-icon-font', 'icon-list')}></i> */}
+              </div>
             </Tooltip>
             <Tooltip title="Grid View">
-              <div className={classes.headItem}><ViewModuleIcon className={classes.listGridIcons} onClick={e => this.handleView(e, 'grid')} /></div>
+              <div className={classes.headItem}><ViewModuleIcon className={classes.listGridIcon} onClick={e => this.handleView(e, 'grid')} /></div>
             </Tooltip>
           </div>
           {view === 'list' ?

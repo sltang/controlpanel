@@ -5,7 +5,7 @@ const width = 200,
 height= 200,                            
 radius = 100;
 
-export const STATES = {'Not Connected':'#565656', 'Idle':'#00C49F', 'Error':'#FF0000', 'PreRun':'#800080', 'Running':'#0088FE', 'NotReady':'#FFFF00', 'MaintananceDue':'#FFBB28', 'Sleep':'#A52A2A'}
+export const STATES = {'Error':'#FF0000', 'Idle':'#00C49F', 'MaintananceDue':'#FFBB28', 'Not Connected':'#565656', 'NotReady':'#FFFF00', 'PreRun':'#800080', 'Running':'#0088FE', 'Sleep':'#A52A2A'}
 
 const color = d3.scaleOrdinal().range(['#0088FE', '#00C49F', '#FFBB28', '#FF8042']);    //builtin range of colors
 

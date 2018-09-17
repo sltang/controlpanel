@@ -21,7 +21,7 @@ const styles = theme => ({
     button:{
         width: '100px',
         textTransform: 'none',
-        fontSize: '0.6rem',
+        fontSize: '0.6rem !important',
         fontWeight: '400',
         minHeight: '30px',
         textTransform: 'none',
