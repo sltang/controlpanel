@@ -7,7 +7,6 @@ const styles = theme => ({
       display: 'flex',
       flexWrap: 'wrap',
       flexDirection: 'row',
-      /*textAlign: 'center',*/
       alignItems: 'start',
       width:'150px',
       maxHeight:'180px',

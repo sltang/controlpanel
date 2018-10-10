@@ -1,24 +1,7 @@
 import * as locationService from './location';
 import * as utils from './utils';
 
-const instruments = [
-  // {
-  //   id: 1, name: 'instrument 1', project: 'Project 1', location: 'San Francisco', locationId: 1, application: 'OpenLab CDS', type: 'Agilent GC & GC/MS Systems', controller: 'CND8084VHW',
-  //   description: '', lastConfiguredBy: '', lastConfigured: '', created: '2018-05-23 15:50:33-07:00', usedBy: '', runStatus: '', currentSample: 'Sample 1', status: 'Running'
-  // },
-  // {
-  //   id: 3, name: 'instrument 3', project: 'Project 1', location: 'San Francisco', locationId: 1, application: 'OpenLab CDS', type: 'Agilent GC & GC/MS Systems', controller: 'CND8084VHW',
-  //   description: '', lastConfiguredBy: '', lastConfigured: '', created: '2018-05-23 15:30:01-07:00', usedBy: '', runStatus: '', currentSample: 'Sample 2', status: 'Error'
-  // },
-  // {
-  //   id: 2, name: 'instrument 2', project: 'Project 1', location: 'Santa Clara', locationId: 2, application: 'OpenLab CDS', type: 'Agilent LC & LC/MS Systems', controller: 'CND8084VHW',
-  //   description: '', lastConfiguredBy: '', lastConfigured: '', created: '2018-05-23 15:55:33-07:00', usedBy: '', runStatus: '', currentSample: '', status: 'Not Connected'
-  // },
-  // {
-  //   id: 4, name: 'instrument 4', project: 'Project 1', location: 'San Francisco', locationId: 1, application: 'OpenLab CDS', type: 'Agilent LC & LC/MS Systems', controller: 'CND8084VHW',
-  //   description: '', lastConfiguredBy: '', lastConfigured: '', created: '2018-05-23 15:55:33-07:00', usedBy: '', runStatus: '', currentSample: '', status: 'Running'
-  // }
-]
+const instruments = []
 
 const locations = ['Location 1', 'Location 2', 'Location 3', 'Location 4', 'Location 5', 'Location 6', 'Location 7', 'Location 8', 'Location 9', 'Location 10']
 const types = ['Agilent GC & GC/MS Systems', 'Agilent LC & LC/MS', 'Agilent A/D System', 'Virtual Instruments']
@@ -55,8 +38,6 @@ const generateInstruments = () => {
   }
   return instruments
 }
-
-//class InstrumentService {
 
 export const getAll = () => {
   if (instruments.length === 0) {

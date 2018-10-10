@@ -1,37 +1,21 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-
-import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-import TextField from '@material-ui/core/TextField';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-
-import AuditTrailingSettings from './audittrailsettings';
+import AuditTrailSettings from './audittrailsettings';
 import SampleCustomParameters from './samplecustomparameters';
 import CompoundCustomParameters from './compoundcustomparameters';
+import classNames from 'classnames'
+import AgCheckbox from '../../components/checkbox'
 
 const styles = theme => ({
     root: {
+        marginLeft: theme.spacing.unit*3,
         flexGrow: 1,
     },
-    detailsItem: {
-        marginTop: theme.spacing.unit,
-        marginLeft: theme.spacing.unit*3,
+    collapseExpandIcon: {
+        fontSize: '18px',
     },
-    paper: {
-        textAlign: 'left',
-    },
-    gutters: {
-        paddingLeft: '0px'
-    }
 })
 
 class ProjectCDSSettings extends Component {
@@ -39,113 +23,119 @@ class ProjectCDSSettings extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            project:{
+                locations:{
+                    methods:"C:\\CDSProjects\\Project 1\\Methods",
+                    sequences:"C:\\CDSProjects\\Project 1\\Sequences",
+                    results:"C:\\CDSProjects\\Project 1\\Results",
+                    sequenceTemplates:"C:\\CDSProjects\\Project 1\\Sequence Templates",
+                    reportTemplates:"C:\\CDSProjects\\Project 1\\Report Templates",
+                }
+            },
+            fileOptionsOpen:true,
+            projectOptionsOpen:true,
+            detailsOpen:true,
+            auditTrailSettingsOpen:true,
+            sampleCustomParams:false,
+            compoundCustomParams:false
         };
     }
 
-    handleDetailsClick = event => {
-        this.setState({ detailsOpen: this.state.detailsOpen === undefined || !this.state.detailsOpen });
+    handleFileOptionsClick = event => {
+        this.setState({ fileOptionsOpen: !this.state.fileOptionsOpen });
     }
 
-    handleAuditTrailingSettingsClick = event => {
-        this.setState({ auditTrailingSettingsOpen: this.state.auditTrailingSettingsOpen === undefined || !this.state.auditTrailingSettingsOpen });
+    handleDetailsClick = event => {
+        this.setState({ detailsOpen: !this.state.detailsOpen });
+    }
+
+    handleAuditTrailSettingsClick = event => {
+        this.setState({ auditTrailSettingsOpen: !this.state.auditTrailSettingsOpen });
     }
 
     handleProjectOptionsClick = event => {
-        this.setState({ projectOptionsOpen: this.state.projectOptionsOpen === undefined || !this.state.projectOptionsOpen });
+        this.setState({ projectOptionsOpen: !this.state.projectOptionsOpen });
     }
 
     handleChange = name => event => {
-        this.setState({ [name]: this.state[name] === undefined || !this.state[name] });
+        console.log(name)
+        this.setState({ [name]:!this.state[name] });
     }
 
     render() {
-        const { project, classes } = this.props;
+        const { classes } = this.props;
+        const { project, fileOptionsOpen, projectOptionsOpen, auditTrailSettingsOpen, sampleCustomParams, compoundCustomParams } = this.state
+
         return (
-            <div>
-                <Grid container spacing={8}>
-                    <Grid item xs={12} sm={2}>
-                        <div className={classes.paper}>Methods:</div>
-                    </Grid>
-                    <Grid item xs={12} sm={10}>
-                        <div className={classes.paper}>{project.methods}</div>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                        <div className={classes.paper}>Sequences:</div>
-                    </Grid>
-                    <Grid item xs={12} sm={10}>
-                        <div className={classes.paper}>{project.sequences}</div>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                        <div className={classes.paper}>Results:</div>
-                    </Grid>
-                    <Grid item xs={12} sm={10}>
-                        <div className={classes.paper}>{project.results}</div>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                        <div className={classes.paper}>Sequence Templates:</div>
-                    </Grid>
-                    <Grid item xs={12} sm={10}>
-                        <div className={classes.paper}>{project.sequenceTemplates}</div>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                        <div className={classes.paper}>Report Templates:</div>
-                    </Grid>
-                    <Grid item xs={12} sm={10}>
-                        <div className={classes.paper}>{project.reportTemplates}</div>
-                    </Grid>
-                </Grid>
-                <List component="nav">
-                    <ListItem button onClick={this.handleProjectOptionsClick} className={classes.gutters}>
-                        {this.state.projectOptionsOpen ? <ExpandLess /> : <ExpandMore />}
-                        <ListItemText inset primary="Project Options" />
-                    </ListItem>
-                    <Collapse in={this.state.projectOptionsOpen} timeout="auto" unmountOnExit>
-                        <Grid container spacing={8} className={classes.detailsItem}>
-                            <Grid item xs={12} sm={12}>
-                                <div className={classes.paper}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                            checked={this.state.allowPrinting?true:false}
-                                            onChange={this.handleChange('allowPrinting')}
-                                            value="allowPrinting"
-                                            />
-                                        }
-                                        label="Allow printing of unsaved processing methods and results"
-                                    />                                
-                                </div>
-                            </Grid>
-                            
-                        </Grid>
-                    </Collapse>
-                </List>
-                <List component="nav">
-                    <ListItem button onClick={this.handleAuditTrailingSettingsClick} className={classes.gutters}>
-                        {this.state.auditTrailingSettingsOpen ? <ExpandLess /> : <ExpandMore />}
-                        <ListItemText inset primary="Audit Trail Settings" />
-                    </ListItem>
-                    <Collapse in={this.state.auditTrailingSettingsOpen} timeout="auto" unmountOnExit>
-                        <AuditTrailingSettings project={project} />
-                    </Collapse>
-                </List>
-                <List component="nav">
-                    <ListItem button onClick={this.handleChange('sampleCustomParams')} className={classes.gutters}>
-                        {this.state.sampleCustomParams ? <ExpandLess /> : <ExpandMore />}
-                        <ListItemText inset primary="Sample Custom Parameters" />
-                    </ListItem>
-                    <Collapse in={this.state.sampleCustomParams} timeout="auto" unmountOnExit>
-                        <SampleCustomParameters project={project} readOnly={true} />
-                    </Collapse>
-                </List>
-                <List component="nav">
-                    <ListItem button onClick={this.handleChange('compoundCustomParams')} className={classes.gutters}>
-                        {this.state.compoundCustomParams ? <ExpandLess /> : <ExpandMore />}
-                        <ListItemText inset primary="Compound Custom Parameters" />
-                    </ListItem>
-                    <Collapse in={this.state.compoundCustomParams} timeout="auto" unmountOnExit>
-                        <CompoundCustomParameters project={project} readOnly={true} />
-                    </Collapse>
-                </List>
+            <div>                
+                <div onClick={this.handleFileOptionsClick}>
+                    <span className={classNames('ol-icon-font', fileOptionsOpen ? 'icon-node-expanded':'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;File Options</span>
+                </div>
+                <Collapse in={fileOptionsOpen} timeout="auto" unmountOnExit>
+                    <div className={classes.root}>
+                        <div className="form-group row align-items-center">
+                            <label htmlFor="methods" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Methods</label>
+                            <div className="col-sm-10">
+                                {project.locations.methods}
+                            </div>
+                        </div>
+                        <div className="form-group row align-items-center">
+                            <label htmlFor="methods" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Sequences</label>
+                            <div className="col-sm-10">
+                                {project.locations.sequences}
+                            </div>
+                        </div>
+                        <div className="form-group row align-items-center">
+                            <label htmlFor="methods" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Results</label>
+                            <div className="col-sm-10">
+                                {project.locations.results}
+                            </div>
+                        </div>
+                        <div className="form-group row align-items-center">
+                            <label htmlFor="methods" className={classNames('col-sm-2', 'col-form-label')}>Sequence Templates</label>
+                            <div className="col-sm-10">
+                                {project.locations.sequenceTemplates}
+                            </div>
+                        </div>
+                        <div className="form-group row align-items-center">
+                            <label htmlFor="methods" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Report Templates</label>
+                            <div className="col-sm-10">
+                                {project.locations.reportTemplates}
+                            </div>
+                        </div>
+                    </div>
+                </Collapse>
+                <div onClick={this.handleProjectOptionsClick}>
+                    <span className={classNames('ol-icon-font', projectOptionsOpen ? 'icon-node-expanded':'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Project Options</span>
+                </div>
+                <Collapse in={projectOptionsOpen} timeout="auto" unmountOnExit>
+                    <div className={classNames('form-row', 'align-items-center', classes.root)}>
+                        <AgCheckbox disabled checked={project.allowPrinting ? project.allowPrinting : false} />
+                        <label htmlFor="methods" className={classNames('col-form-label')}>Allow printing of unsaved processing methods and results</label>
+                    </div>
+                </Collapse>
+                
+                <div onClick={this.handleChange('auditTrailSettingsOpen')}>
+                    <span className={classNames('ol-icon-font', auditTrailSettingsOpen ? 'icon-node-expanded':'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Audit Trail Settings</span>
+                </div>
+                <Collapse in={auditTrailSettingsOpen} timeout="auto" unmountOnExit>
+                    <AuditTrailSettings project={project} />
+                </Collapse>
+                
+                <div onClick={this.handleChange('sampleCustomParams')}>
+                    <span className={classNames('ol-icon-font', sampleCustomParams ? 'icon-node-expanded':'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Sample Custom Paramters</span> :
+                </div>
+                <Collapse in={sampleCustomParams} timeout="auto" unmountOnExit>
+                    <SampleCustomParameters project={project} readOnly={true} />
+                </Collapse>
+                
+                <div onClick={this.handleChange('compoundCustomParams')}>
+                    <span className={classNames('ol-icon-font', compoundCustomParams ? 'icon-node-expanded':'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Compound Custom Paramters</span> :
+                </div>
+                <Collapse in={compoundCustomParams} timeout="auto" unmountOnExit>
+                    <CompoundCustomParameters project={project} readOnly={true} />
+                </Collapse>
+                
             </div>
         )
     }

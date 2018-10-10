@@ -1,25 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import AddProjectProperties from './addprojectproperties';
 import AddProjectCDSSettings from './addprojectcdssettings';
 import { withRouter } from 'react-router';
-import * as dataService from '../../service/dataservice.js';
+import * as projectService from '../../service/project.js';
+import AgButton from '../../components/button'
+import AgTabs from '../../components/tabs'
 
 const styles = theme => ({
   root: {
-
     flexGrow: 1,
-
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing.unit * 2,
   },
   head: {
     display: 'flex',
@@ -30,7 +22,6 @@ const styles = theme => ({
     justifyContent: 'space-between',
     fontSize:'20px'
   },
-
 });
 
 function TabContainer(props) {
@@ -52,46 +43,77 @@ class AddProject extends Component {
       value: 0,
       project: {name:'', folderPath:'', desc:'', application:true, method:'', sequences:'', results:'', sequenceTemplates:'',
         reportTemplates:'', allowPrinting:false
+      },
+      locations:{
+        methods:'',
+        sequences:'',
+        results:'',
+        sequenceTemplates:'',
+        reportTemplates:'',
       }
     };
+    this.handleChange = this.handleChange.bind(this)
+    this.handleUpload = this.handleUpload.bind(this)
+    this.handleOKClick = this.handleOKClick.bind(this)
+    this.handleCancelClick = this.handleCancelClick.bind(this)
   }
 
-  componentDidMount() {
-    const { match } = this.props;
-    let projects = dataService.getById('project', match.params.id);
-    if (projects.length > 0) {
-     this.setState({ project:projects[0] });
-    }
-  }
-
-  handleChange = (event, value) => {
+  handleTabChange = (event, value) => {
     this.setState({ value });
   };
 
-  handleCancelClick = event => {
-    const { history:{ push }, match } = this.props;
-    push('/project/view/'+match.params.id);
+  handleCancelClick() {
+    const { history:{ push } } = this.props;
+    push('/projects');
+  }
+
+  handleOKClick() {
+    const{ project } = this.state
+    projectService.add(project)
+    const { history:{ push } } = this.props;
+    push('/projects');
+  }
+
+  handleChange(event, name) {
+    const { project } = this.state
+    project[name] = event.target.checked ? event.target.checked : event.target.value
+    this.setState({project})
+  }
+
+  handleUpload(browseFor, filename) {
+    const { locations } = this.state
+    locations[browseFor] = filename
+    this.setState({locations})
   }
 
   render() {
     const { classes } = this.props;
-    const { project, value } = this.state;
+    const { project, value, locations } = this.state;
 
-    return (        
-      <div className={classes.root}>
-        <div className={classes.head}>Create Project</div>
-        <div position="static">
-        <Tabs
-            value={value}
-            onChange={this.handleChange}
-          >
-            <Tab label="Properties" />
-            <Tab label="CDS Settings" />
-        </Tabs>
-        {value === 0 && <TabContainer><AddProjectProperties project={project} /></TabContainer>}
-        {value === 1 && <TabContainer><AddProjectCDSSettings project={project} /></TabContainer>}
+    return ( 
+      <Fragment>
+        <div className={classes.root}>
+          <div className={classes.head}>Create Project</div>
+          <div position="static">
+            <AgTabs
+              value={value}
+              onChange={this.handleTabChange}
+            >
+              <Tab label="Properties" disableRipple style={{ textTransform: 'none', outline: 'none', backgroundColor: '#e1e3e5' }} />
+              <Tab label="CDS Settings" disableRipple style={{ textTransform: 'none', outline: 'none', backgroundColor: '#e1e3e5' }} />
+            </AgTabs>
+            {value === 0 && <TabContainer><AddProjectProperties project={project} handleChange={this.handleChange} /></TabContainer>}
+            {value === 1 && <TabContainer><AddProjectCDSSettings project={project} handleChange={this.handleChange}
+              locations={locations}
+              handleUpload={this.handleUpload}
+            /></TabContainer>}
+          </div>
         </div>
-      </div>
+        <div className="fixed-footer">
+          <AgButton type="primary" value="OK" onClick={this.handleOKClick} />
+          <AgButton type="secondary" value="Cancel" onClick={this.handleCancelClick} />
+        </div>
+      </Fragment>
     );
   }
   
@@ -103,7 +125,3 @@ AddProject.propTypes = {
 };
 
 export default withStyles(styles)(withRouter(AddProject));
-/*
-        {value === 0 && <TabContainer><AddProjectProperties project={project} /></TabContainer>}
-        {value === 1 && <TabContainer><EditProjectCDSSettings project={project} /></TabContainer>}
-        */

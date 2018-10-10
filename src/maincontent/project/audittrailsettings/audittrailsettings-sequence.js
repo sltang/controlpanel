@@ -1,20 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import AuditTrailSettingsReasons from './audittrailsettings-reasons'
+import AuditTrailSettingsOptions from './audittrailsettings-options'
 
 const styles = theme => ({ 
   root: {
-    marginLeft: theme.spacing.unit*5,
     flexGrow: 1,
-    flexDirection: 'column-reverse',
-    display: '-webkit-flex',
-    '-webkit-flex-direction': 'column-reverse',
   },
   formControl: {
     margin: theme.spacing.unit * 3,
@@ -36,78 +28,15 @@ TabContainer.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-class AuditTrailingSettingsSequence extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: 'noPrompt',
-      allowOwnReason:false,
-      autoEnable:false,
-    };
-  }
-
-  componentDidMount() {
-
-  }
-
-  handleChange = name => event => {
-    this.setState({[name]:this.state[name] === undefined || !this.state[name]})
-  };
-
-  handlePromptChange = event => {
-    this.setState({ value: event.target.value })
-  };
+class AuditTrailSettingsSequence extends Component {
 
   render() {
-    const { classes } = this.props;
+    const { classes, reasons, allowOwnReason, autoEnableAuditTrail, prompt  } = this.props;
     
       return (        
-        <div className={classes.root}>          
-          <FormControl component="fieldset">
-          <TextField
-            id="sequence"
-            label=""
-            className={classes.textFieldAlign}
-            multiline
-            rows="4"
-            value="sequence"
-            onChange={this.handleChange('sequence')}
-            margin="normal"
-            fullWidth
-          />
-          <FormControlLabel
-              control={
-                  <Checkbox
-                  checked={this.state.allowOwnReason}
-                  onChange={this.handleChange('allowOwnReason')}
-                  value="allowOwnReason"
-                  />
-              }
-              label="Allow users to type their own reason"
-          />
-          <FormControlLabel
-              control={
-                  <Checkbox
-                  checked={this.state.autoEnable}
-                  onChange={this.handleChange('autoEnable')}
-                  value="autoEnable"
-                  />
-              }
-              label="Automatically enable audit trail"
-          /> 
-            <RadioGroup
-              aria-label=""
-              name=""
-              className={classes.group}
-              value={this.state.value}
-              onChange={this.handlePromptChange}
-            >
-              <FormControlLabel value="prompt" control={<Radio />} label="Prompt for reason when saving" />
-              <FormControlLabel value="noPrompt" control={<Radio />} label="Do not prompt for reason" />
-            </RadioGroup>
-          </FormControl>
-           
+        <div className={classes.root}>   
+          <AuditTrailSettingsReasons reasons={reasons} readOnly={true} /> 
+          <AuditTrailSettingsOptions allowOwnReason={allowOwnReason} autoEnableAuditTrail={autoEnableAuditTrail} prompt={prompt} />       
         </div>
       );
     
@@ -115,8 +44,8 @@ class AuditTrailingSettingsSequence extends Component {
 
 }
 
-AuditTrailingSettingsSequence.propTypes = {
+AuditTrailSettingsSequence.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(AuditTrailingSettingsSequence);
+export default withStyles(styles)(AuditTrailSettingsSequence);

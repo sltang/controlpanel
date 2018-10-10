@@ -1,17 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-
-import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-import TextField from '@material-ui/core/TextField';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import { ActivityLogColumnData } from '../columndata';
-import MyTable from '../table';
+import classNames from 'classnames'
+import ProjectActivityLogTable from './activitylogtable'
 
 const styles = theme => ({
     root: {
@@ -21,12 +13,12 @@ const styles = theme => ({
         marginTop: theme.spacing.unit,
         marginLeft: theme.spacing.unit*3,
     },
-    paper: {
-        textAlign: 'left',
+    formRow:{
+        paddingLeft:'60px'
     },
-    gutters: {
-        paddingLeft: '0px'
-    }
+    collapseExpandIcon: {
+        fontSize: '18px',
+    },
 })
 
 class ProjectProperties extends Component {
@@ -34,93 +26,79 @@ class ProjectProperties extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            activityLogOpen:true,
+            detailsOpen:true
         };
     }
 
     handleDetailsClick = event => {
-        this.setState({ detailsOpen: this.state.detailsOpen === undefined || !this.state.detailsOpen });
+        this.setState({ detailsOpen: !this.state.detailsOpen });
     }
 
     handleActivityLogClick = event => {
-        this.setState({ activityLogOpen: this.state.activityLogOpen === undefined || !this.state.activityLogOpen });
+        this.setState({ activityLogOpen: !this.state.activityLogOpen });
     }
 
     render() {
         const { project, classes } = this.props;
+        const {detailsOpen, activityLogOpen } = this.state
         return (
             <div>
-                <Grid container spacing={8}>
-                    <Grid item xs={4}>
-                        <div className={classes.paper}>Name:</div>
-                    </Grid>
-                    <Grid item xs={8}>
-                        <div className={classes.paper}>{project.name ? project.name : ''}</div>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <div className={classes.paper}>Project folder path:</div>
-                    </Grid>
-                    <Grid item xs={8}>
-                        <div className={classes.paper}>{project.folderPath}</div>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <div className={classes.paper}>Description:</div>
-                    </Grid>
-                    <Grid item xs={8}>
-                    <TextField
-                        id="desc"
-                        label=""
-                        multiline
-                        rows="4"
-                        value={project.desc}
-                        margin="normal"
-                        fullWidth
-                        readOnly
-                    />
-                    </Grid>
-                </Grid>
-                <List component="nav">
-                    <ListItem button onClick={this.handleDetailsClick} className={classes.gutters}>
-                        {this.state.detailsOpen ? <ExpandLess /> : <ExpandMore />}
-                        <ListItemText inset primary="Details" />
-                    </ListItem>
-                    <Collapse in={this.state.detailsOpen} timeout="auto" unmountOnExit>
-                        <Grid container spacing={8} className={classes.detailsItem}>
-                            <Grid item xs={4}>
-                                <div className={classes.paper}>Project ID:</div>
-                            </Grid>
-                            <Grid item xs={8}>
-                                <div className={classes.paper}>{project.id}</div>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <div className={classes.paper}>Created:</div>
-                            </Grid>
-                            <Grid item xs={8}>
-                                <div className={classes.paper}>{project.createDate}</div>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <div className={classes.paper}>Modified:</div>
-                            </Grid>
-                            <Grid item xs={8}>
-                                <div className={classes.paper}>{project.modified}</div>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <div className={classes.paper}>Modified by:</div>
-                            </Grid>
-                            <Grid item xs={8}>
-                                <div className={classes.paper}>{project.modifiedBy}</div>
-                            </Grid>
-                        </Grid>
-                    </Collapse>
-                </List>
-                <List component="nav">
-                    <ListItem button onClick={this.handleActivityLogClick} className={classes.gutters}>
-                        {this.state.activityLogOpen ? <ExpandLess /> : <ExpandMore />}
-                        <ListItemText inset primary="Activity Log (last 7 days)" />
-                    </ListItem>
-                    <Collapse in={this.state.activityLogOpen} timeout="auto" unmountOnExit>
-                        <MyTable data={[]} columnData={ActivityLogColumnData} type={{}} noSelected="true" />
-                    </Collapse>
-                </List>
+                <div className={classNames('form-group', 'row')}>
+                    <label htmlFor="name" className="col-sm-2 col-form-label">Name</label>
+                    <div className="col-sm-10">
+                        <input disabled type="text" className="form-control" rows="4" value={project.name}></input>
+                    </div>
+                </div>
+                <div className={classNames('form-group', 'row')}>
+                    <label htmlFor="name" className="col-sm-2 col-form-label">Project folder path</label>
+                    <div className="col-sm-10">
+                        <input disabled type="text" className="form-control" value={project.folderPath}></input>
+                    </div>
+                </div>
+                <div className={classNames('form-group', 'row', 'align-items-center')}>
+                    <label htmlFor="description" className="col-sm-2 col-form-label">Description</label>
+                    <div className="col-sm-10">
+                        <textarea disabled className="form-control" rows="4" value={project.desc}></textarea>
+                    </div>
+                </div>
+                <div onClick={this.handleDetailsClick}>            
+                    <span className={classNames('ol-icon-font', detailsOpen ?'icon-node-expanded':'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Details</span> 
+                </div>
+                <Collapse in={detailsOpen} timeout="auto" unmountOnExit>
+                    <div className={classNames('form-group', 'row')}>
+                    <label htmlFor="projectId" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Project Id</label>
+                    <div className="col-sm-10">
+                        <input disabled type="text" className="form-control" value={project.id}></input>
+                    </div>
+                    </div>
+                    <div className={classNames('form-group', 'row')}>
+                    <label htmlFor="created" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Created</label>
+                    <div className="col-sm-10">
+                        <input disabled type="text" className="form-control" value={project.folderPath}></input>
+                    </div>              
+                    </div>
+                    <div className={classNames('form-group', 'row')}>
+                    <label htmlFor="modified" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Modified</label>
+                    <div className="col-sm-10">
+                        <input disabled type="text" className="form-control" value={project.modified}></input>
+                    </div> 
+                    </div>
+                    <div className={classNames('form-group', 'row')}>
+                    <label htmlFor="modifiedBy" className={classNames('col-sm-2', 'col-form-label', classes.formRow)}>Modified by</label>
+                    <div className="col-sm-10">
+                        <input disabled type="text" className="form-control" value={project.modifiedBy}></input>
+                    </div> 
+                    </div>
+                </Collapse>
+                <div onClick={this.handleActivityLogClick}>            
+                    <span className={classNames('ol-icon-font', activityLogOpen?'icon-node-expanded':'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Activity Log (last 7 days)</span> 
+                </div>
+                <Collapse in={activityLogOpen} timeout="auto" unmountOnExit>
+                    <div className="col-sm-12" style={{marginLeft:'28px'}}>
+                        <ProjectActivityLogTable />
+                    </div>                   
+                </Collapse> 
             </div>
         )
     }

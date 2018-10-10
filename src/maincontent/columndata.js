@@ -25,7 +25,7 @@ export const ProjectColumnData = [
 ];
 
 export const LocationColumnData = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Name' },,
+  { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
   { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
   { id: 'createDate', numeric: false, disablePadding: false, label: 'Creation Date' },
   { id: 'createdBy', numeric: false, disablePadding: false, label: 'Created By' }
@@ -34,7 +34,7 @@ export const LocationColumnData = [
 export const ActivityLogColumnData = [
     { id: 'dateTime', numeric: false, disablePadding: true, label: 'Date/Time' },
     { id: 'user', numeric: false, disablePadding: false, label: 'User' },
-    { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
+    { id: 'description', numeric: false, disablePadding: false, label: 'Description' },
   ];
 
   export const CustomParametersColumnData = [
@@ -43,3 +43,10 @@ export const ActivityLogColumnData = [
     { id: 'defaultValue', numeric: false, disablePadding: false, label: 'Default Value' },
     { id: 'mandatory', numeric: false, disablePadding: false, label: 'Mandatory' },
   ];
+
+  export const EditColumnsColumnData = [
+    { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
+    { id: 'visibility', numeric: false, disablePadding: false, label: 'Visibility' },
+  ]
+
+  

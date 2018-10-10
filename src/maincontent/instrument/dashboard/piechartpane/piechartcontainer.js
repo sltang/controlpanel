@@ -31,7 +31,6 @@ class DashBoardPieChart extends Component {
 
     render() {
         const {classes, handleArcClick, groupBy, data} = this.props
-        //const { locations, states, types } = this.state
 
         if (data !== undefined) {
             return (

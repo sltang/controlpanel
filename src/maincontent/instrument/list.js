@@ -1,5 +1,4 @@
 import React from 'react';
-import * as dataService from '../../service/dataservice.js';
 import * as instrumentService from '../../service/instrument.js';
 import EditColumns from './editcolumns';
 import MyTable from '../table';
@@ -10,14 +9,10 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import DashboardPieChart from './dashboard/piechartpane/piecharts.js'
+import DashboardPieChart from './dashboard/piechartpane/piechartgroup.js'
 import * as utils from '../../service/utils.js';
 import ClearIcon from '@material-ui/icons/Clear'
 import Collapse from '@material-ui/core/Collapse';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
 import classNames from 'classnames'
 import {STATES} from './dashboard/piechartpane/piechart.js'
 
@@ -27,7 +22,8 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'flex-end'
   },
   headItem: {
     marginRight: '20px'
@@ -60,10 +56,8 @@ const styles = theme => ({
     fontSize: '48px',
     fontWeight: 700
   },
-   collapseExpandIcon: {
+  collapseExpandIcon: {
      fontSize: '18px',
-  //   width: '8px',
-  //   height: '8px'
    },
   label:{
     marginRight:'20px'
@@ -80,9 +74,9 @@ class ListInstrument extends React.Component {
     let instruments;
     const { match } = this.props;
     if (match.params.id !== undefined) {
-      instruments = dataService.getAllByLocation('instrument', match.params.id);
+      instruments = instrumentService.getAllByLocation(match.params.id);
     } else {
-      instruments = dataService.getAll('instrument');
+      instruments = instrumentService.getAll();
     }
 
     this.state = {
@@ -98,6 +92,7 @@ class ListInstrument extends React.Component {
       groupBy: {},
       pieChartOpen: true,
       searchOn: false,
+      type:{label:'Instruments', name:'instrument'}
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -140,9 +135,9 @@ class ListInstrument extends React.Component {
     let instruments;
     const { match } = this.props;
     if (match.params.id !== undefined) {
-      instruments = dataService.getAllByLocation('instrument', match.params.id);//location
+      instruments = instrumentService.getAllByLocation(match.params.id);
     } else {
-      instruments = dataService.getAll('instrument');
+      instruments = instrumentService.getAll();
     }
     const groupByLocation = utils.groupBy(instruments, 'location')
     const locations = utils.getGroupBy(groupByLocation)
@@ -158,26 +153,28 @@ class ListInstrument extends React.Component {
   }
 
   handleClick(id) {
-    const { history: { push }, type } = this.props;
-    push('/' + type.name + '/view/' + id);
+    const { history: { push } } = this.props;
+    push('/instrument/view/' + id);
   }
 
   handleDelete = ids => {
-    const { match, handleDeleteInstrument } = this.props;
-    handleDeleteInstrument(ids);
-    dataService.remove('instrument', ids);
+    const { match } = this.props;
+    instrumentService.remove(ids);
     let instruments;
     if (match.params.id !== undefined) {
-      instruments = dataService.getAllByLocation('instrument', match.params.id);
+      instruments = instrumentService.getAllByLocation(match.params.id);
     } else {
-      instruments = dataService.getAll('instrument');
+      instruments = instrumentService.getAll();
     }
     this.setState({ data: instruments });
   }
 
-  handleColumnsChange = (checked) => {
+  handleColumnsChange = (data) => {
     const { columnData } = this.props;
-    let filteredColumnData = columnData.filter((_, index) => checked[index])
+    let filteredColumnData = columnData.filter(column => {
+      let d = data.filter(d => d.id === column.id)[0]
+      return d.checked
+    })
     this.setState({ filteredColumnData });
   }
 
@@ -207,7 +204,7 @@ class ListInstrument extends React.Component {
   }
 
   handleClearGroupBy(key) {    
-    const { groupBy, searchOn } = this.state
+    const { groupBy } = this.state
     delete groupBy[key]
     //if search is on, groupBy first and then apply search filter
     if (Object.keys(groupBy).length === 0) {
@@ -262,17 +259,16 @@ class ListInstrument extends React.Component {
   }
 
   render() {
-    const { classes, type, columnData } = this.props;
-    const { data, filteredColumnData, view, groupBy, locations, states, types, groupedInstruments, originalData, searchOn } = this.state;
+    const { classes, columnData } = this.props;
+    const { type, data, filteredColumnData, view, groupBy, locations, states, types, groupedInstruments, originalData, searchOn } = this.state;
     if (locations === undefined) {
       return <div></div>
     } else
       return (
         <div>
           <div onClick={this.handPieChartClick}>
-            {/* {this.state.pieChartOpen ? <ExpandLess /> : <ExpandMore />} */}
             {this.state.pieChartOpen ? <span className={classNames('ol-icon-font', 'icon-node-collapsed', classes.collapseExpandIcon)}></span> :  
-            <i className={classNames('ol-icon-font', 'icon-node-expanded',classes.collapseExpandIcon)}></i> }
+            <span className={classNames('ol-icon-font', 'icon-node-expanded', classes.collapseExpandIcon)}></span> }
             
           </div>
           <Collapse in={this.state.pieChartOpen} timeout="auto" unmountOnExit>
@@ -283,22 +279,8 @@ class ListInstrument extends React.Component {
           <Collapse in={!this.state.pieChartOpen} timeout="auto" unmountOnExit>
             <div className={classes.pie}>
               <div className={classNames('form-group', classes.breadCrumbItem)} >
-                {/* <InputLabel htmlFor="location" style={{marginRight:'10px'}}>Location</InputLabel> */}
                 <label className={classNames('label', classes.label)} htmlFor="location">Location</label>
-                {/* <Select
-                  native
-                  value={groupBy['location']?groupBy['location']:''}
-                  onChange={e => { this.handleArcClick('location', '', e) }}
-                  inputProps={{
-                    name: 'Location',
-                    id: 'location',
-                  }} 
-                >
-                  <option value="" />
-                  {locations.map((loc, index) => {
-                    return <option key={index} value={loc.name}>{loc.name}</option>
-                  })}
-                </Select> */}
+                
                 <select 
                   className={classNames('form-control')}
                   value={groupBy['location']?groupBy['location']:''}
@@ -311,21 +293,7 @@ class ListInstrument extends React.Component {
                 </select> 
               </div>
               <div className={classNames('form-group', classes.breadCrumbItem)}>
-                {/* <InputLabel htmlFor="type" style={{marginRight:'10px'}}>Type</InputLabel>
-                <Select
-                  native
-                  value={groupBy['type']?groupBy['type']:''}
-                  onChange={e => { this.handleArcClick('type', '', e) }}
-                  inputProps={{
-                    name: 'Type',
-                    id: 'type',
-                  }}
-                >
-                  <option value="" />
-                  {types.map((type, index) => {
-                    return <option key={index} value={type.name}>{type.name}</option>
-                  })}
-                </Select> */}
+                
                 <label className={classNames('label', classes.label)} htmlFor="type">Type</label>
                 <select 
                   className={classNames('form-control')}
@@ -339,21 +307,7 @@ class ListInstrument extends React.Component {
                 </select> 
               </div>
               <div className={classNames('form-group', classes.breadCrumbItem)}>
-                {/* <InputLabel htmlFor="status" style={{marginRight:'10px'}}>Status</InputLabel>
-                <Select
-                  native
-                  value={groupBy['status']?groupBy['status']:''}
-                  onChange={e => { this.handleArcClick('status', '', e) }}
-                  inputProps={{
-                    name: 'Status',
-                    id: 'status',
-                  }}
-                >
-                  <option value="" />
-                  {states.map((state, index) => {
-                    return <option key={index} value={state.name}>{state.name}</option>
-                  })}
-                </Select> */}
+                
                 <label className={classNames('label', classes.label)} htmlFor="status">Status</label>
                 <select 
                   className={classNames('form-control')}
@@ -380,7 +334,6 @@ class ListInstrument extends React.Component {
             <Tooltip title="List View">
               <div className={classes.headItem}>
               <ListOutlinedIcon className={classes.listGridIcon} onClick={e => this.handleView(e, 'list')} />
-              {/* <i onClick={e => this.handleView(e, 'list')} className={classNames('ol-icon-font', 'icon-list')}></i> */}
               </div>
             </Tooltip>
             <Tooltip title="Grid View">
@@ -390,30 +343,12 @@ class ListInstrument extends React.Component {
           {view === 'list' ?
             <MyTable data={data} originalData={originalData} columnData={filteredColumnData} type={type} onClick={this.handleClick} handleDelete={this.handleDelete} rowsPerPage={10}
               editColumns={<EditColumns columnData={columnData} handleColumnsChange={this.handleColumnsChange} />}
-              // breadCrumb={
-              //   <div className={classes.breadCrumb}>
-              //     {Object.keys(groupBy).map((key, index) => {
-              //       return <div className={classes.breadCrumbItem} key={index}>{key.replace(/^\w/, c => c.toUpperCase())} {groupBy[key] === '' ? '' : ': ' + groupBy[key]}
-              //         <ClearIcon className={classes.breadCrumbClear} onClick={e => this.handleClearGroupBy(key)} /> {index === Object.keys(groupBy).length - 1 ? '' : '>'}
-              //       </div>
-              //     })}
-              //   </div>
-              // } 
               handleSearch={this.handleSearch}
               handleSearchOn={this.handleSearchOn}
               searchOn={searchOn}
             />
             :
             <InstrumentDashboard data={data} groupedInstruments={groupedInstruments} handleClose={this.handleClose} groupBy={groupBy} handleClick={this.handleClick}
-              // breadCrumb={
-              //   <div className={classes.breadCrumb}>
-              //     {Object.keys(groupBy).map((key, index) => {
-              //       return <div className={classes.breadCrumbItem} key={index}>{key.replace(/^\w/, c => c.toUpperCase())} {groupBy[key] === '' ? '' : ': ' + groupBy[key]}
-              //         <ClearIcon className={classes.breadCrumbClear} onClick={e => this.handleClearGroupBy(key)} /> {index === Object.keys(groupBy).length - 1 ? '' : '>'}
-              //       </div>
-              //     })}
-              //   </div>
-              // }
             />}
         </div>
       );

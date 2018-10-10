@@ -1,3 +1,6 @@
+/**
+ * group elements in objectArray by property
+ */
 export const groupBy = (objectArray, property) => {
     if (objectArray === undefined) {
         console.error('objectArray is undefined')
@@ -15,6 +18,9 @@ export const groupBy = (objectArray, property) => {
     }, {});
 }
 
+/**
+ * group elements in objectArray by property whose value is '' or value
+ */
 const groupBy2 = (objectArray, property, value) => {
     if (objectArray === undefined) {
         console.error('objectArray is undefined')
@@ -36,7 +42,7 @@ const groupBy2 = (objectArray, property, value) => {
 
 export const getGroupBy = (obj) => {
     let data = []
-    Object.keys(obj).forEach(k => {
+    Object.keys(obj).filter(k => Array.isArray(obj[k])).forEach(k => {
         let d = {}
         d['name'] = k
         d['value'] = obj[k].length
@@ -52,17 +58,10 @@ export const getGroupBy = (obj) => {
 export const hierGroupBy = (arr, groupByList) => {
     let grpby = groupByList[0]
     let o = groupBy(arr, grpby)
-    //console.log(o)
     let groupByListCopy = groupByList.slice(0)
     groupByListCopy.splice(0, 1)
-    //console.log(arr)
-    //console.log(groupByListCopy)
     if (groupByListCopy.length > 0) {
-        Object.keys(o).forEach(k => {
-            //let copy = Object.assign(o[k])  
-            //let r = hierGroupBy(copy, local)
-            //if (Object.keys(r).length > 0)
-            //o[k] = r  
+        Object.keys(o).forEach(k => { 
             o[k] = hierGroupBy(o[k], groupByListCopy)
         })
     }

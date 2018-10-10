@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {STATES}  from './piechartpane/piechart';
 import DevicesOutlinedIcon from '@material-ui/icons/DevicesOutlined'
-import { convertHexToRGB } from '@material-ui/core/styles/colorManipulator';
 
 const styles = theme => ({
     overview: {
@@ -39,22 +38,11 @@ const styles = theme => ({
         justifyContent : 'center',
         marginTop : '5px'
     },
-    workloadContainer : {
-        display: 'flex',
-        flexDirection : 'row',
-        justifyContent : 'center',
-    },
     workload : {
         display: 'flex',
         flexDirection : 'column',
         alignItems : 'center',
         paddingRight: '5px'
-    },
-    square: {
-        width: '5px',
-        height: '5px',
-        margin: '2px',
-        border: '1px solid rgba(0, 0, 0, .2)'
     },
     status: {
         color:'#fff',
@@ -77,12 +65,18 @@ class Workload extends Component {
 
     hexToRgb(hex) {
         let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return 'rgb('+Math.floor(parseInt(result[1], 16)/2)+','+Math.floor(parseInt(result[2], 16)/2)+','+Math.floor(parseInt(result[3], 16)/2)+')'
+        let r = parseInt(result[1], 16)
+        let g = parseInt(result[2], 16)
+        let b = parseInt(result[3], 16)
+        let r1 =  Math.max(r-25, 0), r2 = Math.min(r+25, 255)
+        let g1 =  Math.max(g-25, 0), g2 = Math.min(g+25, 255)
+        let b1 =  Math.max(b-25, 0), b2 = Math.min(b+25, 255)
+        return {rgb1:'rgb('+r1+','+g1+','+b1+')', rgb2:'rgb('+r2+','+g2+','+b2+')'}
     }
 
     render() {
-        const { classes, instrument, handleClose} = this.props;
-        //const { workload } = this.state;//do not use state
+        const { classes, instrument } = this.props;
+        const {rgb1, rgb2} = this.hexToRgb(STATES[instrument.status])
         return (
             <div className={classes.overview}>
                 <div className={classes.head}>                    
@@ -91,7 +85,7 @@ class Workload extends Component {
                         <div className={classes.name}>{instrument.name}</div>
                     </div>                 
                 </div>
-                <div className={classes.status} style={{backgroundImage:'linear-gradient(to right,' +this.hexToRgb(STATES[instrument.status]) +','+STATES[instrument.status]+')'}}>{instrument.status}</div>
+                <div className={classes.status} style={{backgroundImage:'linear-gradient(to right,' +rgb1 +','+rgb2+')'}}>{instrument.status}</div>
             </div>
         )
     }

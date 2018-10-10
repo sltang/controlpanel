@@ -1,42 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import CustomParametersTable from './customparameterstable';
+import CustomParameters from './customparameters'
 
-const data = [
-  // {id:1, name:'para 1', type:'text', value:'para 1 value', mandatory:true},
-  // {id:2, name:'para 2', type:'numeric', value:6.0,  mandatory:false},
-
-];
+// const data = [
+//   {id:1, name:'para 1', type:'text', value:'para 1 value', mandatory:true},
+//   {id:2, name:'para 2', type:'numeric', value:6.0,  mandatory:false},
+// ];
 
 const styles = theme => ({ 
   root: {
     marginLeft: theme.spacing.unit*5,
     flexGrow: 1,
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing.unit * 2,
-  },
-  head: {
-    display: 'flex',
-    flexDirection: 'column-reverse',
-    marginBottom: theme.spacing.unit * 2,
-    display: '-webkit-flex',
-    '-webkit-flex-direction': 'column-reverse',
-  },
-  buttons: {
-    display: 'flex',
-    flexDirection: 'column',
-    marginTop: theme.spacing.unit * 3,
-  },
-  button: {
-    marginBottom: theme.spacing.unit * 2,
   }
 
 });
@@ -46,7 +21,7 @@ class SampleCustomParameters extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: data,
+      data: [],
       active:{id:-1, name:""},
     };
     this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -58,7 +33,7 @@ class SampleCustomParameters extends Component {
   }
 
   componentWillUnmount() {
-      document.removeEventListener('mousedown', this.handleClickOutside);
+    document.removeEventListener('mousedown', this.handleClickOutside);
   }
 
   setWrapperRef(node) {
@@ -92,8 +67,7 @@ class SampleCustomParameters extends Component {
     }
   }
 
-  handleChange = (event, id, name) => {
-    //console.log(event.type)    
+  handleChange = (event, id, name) => {  
     if (this.props.readOnly) return;
     let data = this.state.data;
     if (name === 'mandatory') {
@@ -106,7 +80,6 @@ class SampleCustomParameters extends Component {
   }
 
   handleClick = (event, id, name) => {
-    //console.log(event.type)
     if (this.props.readOnly) return;
     let data = this.state.data;
     this.setState({active: {id:id, name:name}, data:data})
@@ -114,27 +87,11 @@ class SampleCustomParameters extends Component {
 
   render() {
     const { classes, readOnly } = this.props;
-    const { active } = this.state;
+    const { active, data } = this.state;
       return (        
         <div className={classes.root} ref={this.setWrapperRef}>
-          <Grid container spacing={16}>    
-            <Grid item xs={12} sm={10}>
-              <CustomParametersTable data={data} active={active} handleClick={this.handleClick} handleChange={this.handleChange}
-              />
-            </Grid> 
-            <Grid item xs={12} sm={2}> 
-              {readOnly ? <div></div> :
-              <div className={classes.buttons}>  
-                <Button variant="outlined" className={classes.button} onClick={this.handleAdd}>
-                  Add
-                </Button>
-                <Button variant="outlined" className={classes.button} onClick={this.handleDelete}>
-                  Delete
-                </Button> 
-              </div>
-              }
-            </Grid>
-          </Grid>
+          <CustomParameters data={data} active={active} handleClick={this.handleClick} handleChange={this.handleChange} 
+          handleAdd={this.handleAdd} handleDelete={this.handleDelete} readOnly={readOnly}/>
         </div>
       )    
   }

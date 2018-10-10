@@ -1,83 +1,43 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-
-import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Grid from '@material-ui/core/Grid';
 import { withRouter } from 'react-router';
-import MyTable from '../table';
-import * as dataService from '../../service/dataservice.js';
-import {ActivityLogColumnData } from '../columndata'
-
-// const ActivityLogColumnData = [
-//   { id: 'dateTime', numeric: false, disablePadding: true, label: 'Date/Time' },
-//   { id: 'user', numeric: false, disablePadding: false, label: 'User' },
-//   { id: 'desc', numeric: false, disablePadding: false, label: 'Description' },
-// ];
+import ActivityLogTable from './activitylogtable';
+import * as instrumentService from '../../service/instrument';
+import * as projectService from '../../service/project';
+import AgButton from '../../components/button'
+import classNames from 'classnames'
 
 const styles = theme => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
   },
-  formControl: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    margin: theme.spacing.unit,
-    minWidth: 240,
-    marginLeft: theme.spacing.unit * 4
-
-  },
-  selectEmpty: {
-    marginTop: theme.spacing.unit * 2,
-  },
   head: {
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: theme.spacing.unit * 2,
-    fontSize:'1rem'
+    fontSize: '20px'
   },
   start: {
     display: 'flex',
-    justifyContent: 'space-between',
     marginTop: theme.spacing.unit * 2,
     marginLeft: theme.spacing.unit * 4,
     fontSize:'1rem'
   },
   button: {
     margin: theme.spacing.unit,
-  },
-  nested: {
-    marginLeft: theme.spacing.unit * 5,
-  },
-  detailsItem: {
-    marginLeft: theme.spacing.unit * 10,
-  },
-  detailsList: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-  },
-  paper: {
-    textAlign: 'left',
+    width: '140px'
   },
   activityLog: {
     marginLeft: theme.spacing.unit * 3,
+  },
+  collapseExpandIcon: {
+    fontSize: '18px',
+  },
+  formRow:{
+    margin:'10px 10px 10px 64px'
   }
 });
 
@@ -91,14 +51,13 @@ class ViewInstrument extends Component {
       projectName: '',
       selectedProjectName: '',
       projects: [],
-      data: []
     };
   }
 
   componentDidMount() {
     const { match } = this.props;
-    let instruments = dataService.getById('instrument', match.params.id);
-    let projects = dataService.getAll('project')
+    let instruments = instrumentService.getById(match.params.id);
+    let projects = projectService.getAll()
     if (instruments.length > 0) {
       this.setState({ data:instruments[0], projects, projectName:instruments[0].project});
     }
@@ -106,7 +65,7 @@ class ViewInstrument extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
-      let instruments = dataService.getById('instrument', this.props.match.params.id);
+      let instruments = instrumentService.getById(this.props.match.params.id);
       if (instruments.length > 0) {
         this.setState({ data:instruments[0]});
       }
@@ -132,7 +91,7 @@ class ViewInstrument extends Component {
   }
 
   handleStatusClick = event => {
-    this.setState({ statusOpen: this.state.statusOpen === 'undefined' || !this.state.statusOpen });
+    this.setState({ statusOpen: this.state.statusOpen === undefined || !this.state.statusOpen });
   }
 
   handleDetailsClick = event => {
@@ -140,7 +99,7 @@ class ViewInstrument extends Component {
   }
 
   handleActivityLogClick = event => {
-    this.setState({ activityLogOpen: this.state.activityLogOpen === 'undefined' || !this.state.activityLogOpen });
+    this.setState({ activityLogOpen: this.state.activityLogOpen === undefined || !this.state.activityLogOpen });
   }
 
   handleEditClick = event => {
@@ -150,171 +109,148 @@ class ViewInstrument extends Component {
 
   render() {
     const { classes } = this.props;
-    const { data } = this.state;
+    const { data, activityLogOpen } = this.state;
+    if (data !== undefined) {
     return (
       <div>
         <div className={classes.head}><div>{data['name']}</div><div>{data['status']}</div></div>
         <div className={classes.start}>Start Instrument</div>
-        <FormControl className={classes.formControl}>
-          <div>
-            <InputLabel htmlFor="project">Project</InputLabel>
-            <Select
-              native
-              value={this.state.projectName}
-              onChange={this.handleClickOpen}
-              inputProps={{
-                name: 'project',
-                id: 'project',
-              }}
-            >
-              {this.state.projects.map((proj) =>
-                <option key={proj.id} value={proj.name}>{proj.name}</option>
-              )}
-            </Select>
+        <form>
+          <div className={classNames('form-group', 'row', 'align-items-center', classes.formRow)}>
+
+            <label htmlFor="name" className="col-sm-2 col-form-label">Project</label>
+            <div className="col-sm-4">
+              <select
+                className="form-control"
+                value={this.state.projectName}
+                onChange={this.handleClickOpen}
+              >
+                {this.state.projects.map((proj) =>
+                  <option key={proj.id} value={proj.name}>{proj.name}</option>
+                )}
+              </select>
             </div>
-          <div>
-            <Button variant="outlined" color="primary" className={classes.button}>
-              Launch
-            </Button>
-            <Button variant="outlined" className={classes.button}>
-              Launch Offline
-            </Button>
-            <Button variant="outlined" className={classes.button} onClick={this.handleEditClick}>
-              Edit
-            </Button>
-            <Button variant="outlined" className={classes.button}>
-              Lock
-            </Button>
+            <div className="col-sm-6">
+            {data['status'] === 'Not Connected' ?
+              <AgButton type="secondary" value="Launch" disabled /> :
+              <AgButton type="secondary" value="Launch" />}
+              <AgButton type="secondary" value="Launch Offline"  />
+              <AgButton type="secondary" value="Edit" onClick={this.handleEditClick}/>
+              <AgButton type="secondary" value="Lock" />
+            </div>
           </div>
-          
 
-          <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
-            open={this.state.open}
-            onClose={this.handleClose}
-          >
-            <DialogTitle>Are you sure to change the project?</DialogTitle>
+          <div className={classes.start} onClick={this.handleStatusClick}>
+            {this.state.statusOpen ? <span className={classNames('ol-icon-font', 'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Status</span> :
+              <span className={classNames('ol-icon-font', 'icon-node-expanded', classes.collapseExpandIcon)}>&nbsp;Status</span>}
+          </div>
+          <Collapse in={!this.state.statusOpen} timeout="auto" unmountOnExit>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              Instrument has no status information
+              {/* <label htmlFor="status" className="col-sm-3 col-form-label">Instrument has no status information</label> */}
+            </div>
+          </Collapse>            
 
-            <DialogContent>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={this.handleClose} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={this.handleOkClose} color="primary">
-                Ok
-              </Button>
-
-            </DialogActions>
-          </Dialog>
-        </FormControl>
-        <List
-          component="nav"
-        >
-          <ListItem button onClick={this.handleStatusClick}>
-            {this.state.statusOpen ? <ExpandLess /> : <ExpandMore />}
-            <ListItemText inset primary="Status" />            
-          </ListItem>
-          <Collapse in={this.state.statusOpen} timeout="auto" unmountOnExit>
-            <div className={classes.detailsItem}>Instrument has no status information</div>
+          <div className={classes.start} onClick={this.handleDetailsClick}>            
+              {this.state.detailsOpen ? <span className={classNames('ol-icon-font', 'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Details</span> :
+                <span className={classNames('ol-icon-font', 'icon-node-expanded', classes.collapseExpandIcon)}>&nbsp;Details</span>}
+          </div>
+          <Collapse in={!this.state.detailsOpen} timeout="auto" unmountOnExit>
+            <div className={classNames('form-group', 'row', 'align-items-center', classes.formRow)}>
+              <label htmlFor="description" className="col-sm-2 col-form-label">Description</label>
+              <div className="col-sm-10">
+                <textarea className="form-control" rows="4" value={data['description']}></textarea>
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Location</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="location" value={data['location']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Created by</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="createdBy" value={data['createdBy']?data['createdBy']:'SYSTEM'}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Creation date</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="created" value={data['created']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Last configured by</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="lastConfiguredBy" value={data['lastConfiguredBy']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Last configured date/time</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="lastConfigured" value={data['lastConfigured']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Last modified by</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="lastModifiedBy" value={data['lastModifiedBy']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Last modified date/time</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="lastModified" value={data['lastModified']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Application</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="application" value={data['application']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Instrument controller</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="controller" value={data['controller']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Instrument type</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="type" value={data['type']}  />
+              </div>
+            </div>
+            <div className="form-group row" style={{margin:'10px 10px 10px 64px'}}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Id</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="id" value={data['id']}  />
+              </div>
+            </div>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <label htmlFor="name" className="col-sm-2 col-form-label">Owner contact information</label>
+              <div className="col-sm-10">
+                <input readOnly style={{backgroundColor:'#fff'}} type="text" className="form-control" aria-describedby="contact" value={data['contact']}  />
+              </div>
+            </div>
           </Collapse>
-        </List>
-        <List
-          component="nav"
-        >
-          <ListItem button onClick={this.handleDetailsClick}>
-            {this.state.detailsOpen ? <ExpandLess /> : <ExpandMore />}
-            <ListItemText inset primary="Details" />            
-          </ListItem>
-          <Collapse in={this.state.detailsOpen} timeout="auto" unmountOnExit>
-            <Grid container spacing={8} className={classes.detailsItem}>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Description:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.description?this.state.data.description:''}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Location:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.location?this.state.data.location:''}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Created by:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.createdBy?this.state.data.createdBy:'SYSTEM'}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Creation date:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.created?this.state.data.created:''}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Last configured by:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.lastConfiguredBy?this.state.data.lastConfiguredBy:''}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Last configured date/time:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.lastConfigured?this.state.data.lastConfigured:'2018-05-23 15:50:33-07:00'}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Application:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.application}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Instrument controller:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.controller}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Instrument type:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.type}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Id:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}>{this.state.data.id}</div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.paper}>Owner contact information:</div>
-              </Grid>
-              <Grid item xs={8}>
-                <div className={classes.paper}></div>
-              </Grid>
-
-            </Grid>
-          </Collapse>
-        </List>
-        <List
-          component="nav"
-        >
-          <ListItem button onClick={this.handleActivityLogClick}>
-            {this.state.activityLogOpen ? <ExpandLess /> : <ExpandMore />}
-            <ListItemText inset primary="Activity Log (last 7 days)" />            
-          </ListItem>
-          <div className={classes.detailsItem}>             
-            <Collapse in={this.state.activityLogOpen} timeout="auto" unmountOnExit>
-              <MyTable data={[]} columnData={ActivityLogColumnData} type={{}} noSelected="true" />
-            </Collapse>        
-        </div>
-        </List>
-        
+          <div className={classes.start} onClick={this.handleActivityLogClick}>            
+              {activityLogOpen ? <span className={classNames('ol-icon-font', 'icon-node-collapsed', classes.collapseExpandIcon)}>&nbsp;Activity Log (last 7 days)</span> :
+                <span className={classNames('ol-icon-font', 'icon-node-expanded', classes.collapseExpandIcon)}>&nbsp;Activity Log (last 7 days)</span>}
+          </div>
+          <Collapse in={!activityLogOpen} timeout="auto" unmountOnExit>
+            <div className={classNames('form-group', 'row', classes.formRow)}>
+              <div className="col-sm-12">
+                <ActivityLogTable />
+              </div>
+            </div>
+          </Collapse>         
+        </form>        
       </div>
-    );
+    ) } else {
+      return <div></div>
+    }
   }
 
 }

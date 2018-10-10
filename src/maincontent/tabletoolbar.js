@@ -2,39 +2,13 @@ import React, {Component} from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import ClearIcon from '@material-ui/icons/Clear';
-import SearchIcon from '@material-ui/icons/Search';
-import TextField from '@material-ui/core/TextField';
-import { lighten } from '@material-ui/core/styles/colorManipulator';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import AgDialog from '../components/dialog'
 
 const toolbarStyles = theme => ({
   root: {
     paddingRight: theme.spacing.unit,
-  },
-  highlight:
-    theme.palette.type === 'light'
-      ? {
-        color: theme.palette.secondary.main,
-        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-      }
-      : {
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.secondary.dark,
-      },
-  spacer: {
-    flex: '1 1 100%',
-  },
-  actions: {
-    color: theme.palette.text.secondary,
-    display: 'flex',
-    flexDirection: 'row',
   },
   title: {
     flex: '0 0 auto',
@@ -46,9 +20,6 @@ const toolbarStyles = theme => ({
     display: 'flex',
     flexDirection: 'row',
     display: '-webkit-flex',
-  },
-  margin: {
-    marginTop: theme.spacing.unit,
   },
   itemStart: {
     display: 'flex',
@@ -63,7 +34,26 @@ const toolbarStyles = theme => ({
     justifyContent: 'flex-end'
   },
   container: {
-    margin: '10px'
+    minHeight: '70px'
+  },
+  clear:{
+    width:'50px',
+    height:'36px',
+    borderTop: '1px solid #ced4da',
+    borderRight: '1px solid #ced4da',
+    borderBottom: '1px solid #ced4da',
+    fontSize:'18px', 
+    color:'#384350', 
+    cursor:'pointer',
+    marginRight:'10px', 
+    alignItems: 'center',
+    justifyContent: 'center',
+    display:'flex'
+  },
+  colorPrimary:{
+    color:'#384350',
+    marginRight : '10px',
+    cursor:'pointer'
   }
 });
 
@@ -72,25 +62,31 @@ class MyTableToolbar extends Component {
   constructor(props) {
     super(props)
     this.state ={
-      //searchValue: ''
+      showModal:false
     }
+    this.handleSearch = this.handleSearch.bind(this)
+    this.handleSearchOn = this.handleSearchOn.bind(this)
   }
 
-  handleSearch = event => {
-    //this.setState({searchValue:event.target.value})
+  handleSearch(event) {
+    this.handleSearchOn(true)
     this.props.handleSearch(event.target.value)
   }
 
-  handleSearchOn = on => {
+  handleSearchOn(on) {
     this.props.handleSearchOn(on)
     if (!on) {
       this.props.handleSearch('')
     }
   }
 
-//let MyTableToolbar = props => {
+  handleModal = (event) => {
+    this.setState({showModal: !this.state.showModal});
+  }
+
   render() {
-    const { numSelected, classes, /*handleSearch, handleSearchOn,*/ searchOn, type, handleDelete, searchValue } = this.props;
+    const { numSelected, classes, searchOn, type, handleDelete, searchValue } = this.props;
+    const { showModal } = this.state
     if (numSelected === 0) {
       return (
         <div className={classNames('row', classes.container)}>
@@ -100,50 +96,33 @@ class MyTableToolbar extends Component {
           <div className={classNames('col-12', 'col-sm-6', classes.itemStart)}>
             {this.props.breadCrumb}
           </div>
-          <div className={classNames('col-12', 'col-sm-2', classes.itemEnd)}>
-            {searchOn ? (
-              <div className={classes.search}>
-                <TextField onChange={this.handleSearch} className={classes.margin}
-                  value={searchValue}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <IconButton><ClearIcon onClick={e => this.handleSearchOn(false)} /></IconButton></div>) : (
-                <Tooltip title="Filter list">
-                  <IconButton aria-label="Filter list">
-                    <FilterListIcon onClick={e => this.handleSearchOn(true)} />
-                  </IconButton>
-                </Tooltip>
-              )}
-          </div>
-          <div className={classNames('col-12', 'col-sm-2', classes.itemEnd)}>
-            {this.props.editColumns}
+          <div className={classNames('col-12', 'col-sm-4', classes.itemEnd)}>
+              <input type="text" className="form-control" aria-describedby="search" placeholder="Search" value={searchValue} 
+              onChange={this.handleSearch} size="55" style={{height: '36px', borderRightColor:'#fff'}}/>
+              {searchOn ?              
+              <span onClick={e => this.handleSearchOn(false)} className={classes.clear}>&#10006;</span>
+              : <span className={classes.clear}><span className={classNames('ol-icon-font', 'icon-search')} /></span>}
+              {this.props.editColumns }
           </div>
         </div>)
     } else {
       return (
-        <Toolbar className={classNames(classes.root, classes.highlight)}>
-          <Typography color="inherit" variant="subheading">
-            {numSelected} selected
-          </Typography>
-          <div className={classes.spacer} />
-          <div className={classes.actions}>
-            <Tooltip title="Delete">
-              <IconButton aria-label="Delete">
-                <DeleteIcon onClick={handleDelete} />
-              </IconButton>
-            </Tooltip>
+        <div className={classNames('row', classes.container)}>
+          <div className={classNames('col-12', 'col-sm-2', classes.itemStart)}>
+            <Typography variant="title" id="tableTitle">{numSelected} selected</Typography>
           </div>
-        </Toolbar>
+          <div className={classNames('col-12', 'col-sm-9')}></div>
+
+          <div className={classNames('col-12', 'col-sm-1', classes.itemEnd)}>
+            <DeleteOutlinedIcon onClick={this.handleModal} color="primary" classes={{colorPrimary:classes.colorPrimary}} />
+          </div>
+          <AgDialog showModal={showModal} handleCancel={this.handleModal} 
+            dialog={{title:'Delete Instruments', content:'Are you sure you want to delete the selected instrument(s)?'}}
+            handleOk={e => {handleDelete(); this.handleModal() }}/> 
+        </div>
       )
     }
   }
-
   
 };
 

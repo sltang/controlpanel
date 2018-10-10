@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames'
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import EditColumnsTable from './editcolumnstable';
+import AgModal from '../../components/modal'
+import AgButton from '../../components/button'
 
 const styles = theme => ({
     root: {
@@ -25,14 +21,6 @@ const styles = theme => ({
         dispaly: 'flex',
         flexDirection: 'column'
       },
-      editButton: {
-        border: '1px solid #e1e3e5',
-        margin: '10px'
-        //   width: '105px',
-        //   textTransform: 'none',
-        //   fontSize: '0.75rem',
-        //   fontWeight: '400'
-      }
 })
 
 class EditColumns extends Component {
@@ -40,23 +28,26 @@ class EditColumns extends Component {
         super(props);
         const { columnData } = this.props;
         this.state = { 
-            columnData: columnData,
+            columnData: columnData.map(d => {return {...d, checked:true}}),
             open: false,
             checked: columnData.map(_ => true),
             savedChecked: columnData.map(_ => true),
-            selected: -1
+            selected: -1,
+            order:'',
         }
+        this.handleSort = this.handleSort.bind(this)
     }
 
     handleCancel = event => {
-        let checked = this.state.checked.map((_, index) => this.state.savedChecked[index])
-        this.setState({open: false, checked:checked, selected:-1 })
+        let columnData = this.state.columnData
+        columnData.forEach((d, index) => d.checked = this.state.savedChecked[index])
+        this.setState({open: false, columnData, selected:-1 })
     }
 
     handleOk = event => {
-        let savedChecked = this.state.savedChecked.map((_, index) => this.state.checked[index])
+        let savedChecked = this.state.savedChecked.map((_, index) => this.state.columnData[index].checked)
         this.setState({open: false, savedChecked:savedChecked})
-        this.props.handleColumnsChange(this.state.checked)
+        this.props.handleColumnsChange(this.state.columnData)
     }
 
     handleClick = event => {
@@ -64,9 +55,9 @@ class EditColumns extends Component {
     }
 
     handleChange = (event, index) => {
-        let checked = this.state.checked;
-        checked[index] = event.target.checked;
-        this.setState({checked});
+        let columnData = this.state.columnData
+        columnData[index].checked = event.target.checked
+        this.setState({columnData});
     }
 
     handleSelect = (e, index) => {
@@ -104,52 +95,47 @@ class EditColumns extends Component {
         }
     }
 
+    handleSort() {       
+        const { columnData } = this.state;
+        let order = 'desc';
+        let orderBy = 'id'
+
+        if (this.state.order === 'desc') {
+            order = 'asc';
+        }
+
+        order === 'desc'
+        ? columnData.sort((a, b) => (b[orderBy] < a[orderBy] ? -1 : 1))
+        : columnData.sort((a, b) => (a[orderBy] < b[orderBy] ? -1 : 1));     
+        this.setState({ order, columnData});
+    }
+
     render() {
-        const { classes, columnData } = this.props;
-        const { open, checked, selected } = this.state;
+        const { classes } = this.props;
+        const { open, selected, columnData, order } = this.state;
+        
         return (
             <div>
-                <button className={classNames('btn', 'ag-btn-secondary', classes.editButton)} onClick={this.handleClick}>Edit Columns</button>
-                {/* <Button className={classes.editButton} variant="outlined" onClick={this.handleClick}>Edit Columns</Button> */}
-                <Dialog
-                    disableBackdropClick
-                    disableEscapeKeyDown
-                    open={open}
-                    onClose={this.handleClose}
-                    classes={{
-                        paper: classes.paper,
-                    }}
-                >
-                    <DialogTitle>Edit Columns</DialogTitle>
-
-                    <DialogContent>                        
-                        <EditColumnsTable columnData={columnData} handleChange={this.handleChange} handleSelect={this.handleSelect} checked={checked} selected={selected} />
-                    </DialogContent>
-                    <DialogActions>
+                <AgButton type="secondary" onClick={this.handleClick} value={'Edit Columns'} />
+                <AgModal showModal={open} title={'Edit Columns'} content={
+                    <EditColumnsTable columnData={columnData} handleChange={this.handleChange} handleSelect={this.handleSelect} selected={selected} order={order} handleSort={this.handleSort}/>
+                }
+                actions={
                     <div className={classes.buttons}>
                         <div>
-                        <button className={classNames('btn', 'ag-btn-primary', classes.editButton)} onClick={this.handleMoveUp} disabled={selected === -1 || selected < 1}>Move Up</button>
-                        <button className={classNames('btn', 'ag-btn-primary', classes.editButton)} onClick={this.handleMoveDown} disabled={selected === -1 || selected > columnData.length - 2}>Move Down</button>
-                        {/* <Button onClick={this.handleMoveUp} disabled={selected === -1 || selected < 1} color="primary">
-                             Move Up
-                        </Button>
-                        <Button onClick={this.handleMoveDown} disabled={selected === -1 || selected > columnData.length - 2} color="primary">
-                             Move Down
-                        </Button> */}
+                            <AgButton type="primary" onClick={this.handleMoveUp} value={'Move Up'} disabled={selected === -1 || selected < 1} />
+                            <AgButton type="primary" onClick={this.handleMoveDown} value={'Move Down'} disabled={selected === -1 || selected > columnData.length - 2} />
+
                         </div>
                         <div>
-                        <button className={classNames('btn', 'ag-btn-primary', classes.editButton)} onClick={this.handleOk}>OK</button>
-                        <button className={classNames('btn', 'ag-btn-secondary', classes.editButton)} onClick={this.handleCancel}>Cancel</button>
-                        {/* <Button onClick={this.handleOk} color="primary">
-                            Ok
-                        </Button>
-                        <Button onClick={this.handleCancel} color="secondary">
-                            Cancel
-                        </Button> */}
+                            <AgButton type="primary" onClick={this.handleOk} value={'Ok'} />
+                            <AgButton type="secondary" onClick={this.handleCancel} value={'Cancel'} />
+
                         </div>
                     </div>
-                    </DialogActions>
-                </Dialog>	
+                }
+                />
+                	
 
             </div>
         )
@@ -161,4 +147,3 @@ EditColumns.propTypes = {
 };
 
 export default withStyles(styles)(EditColumns);
-/*<EditColumnsTable columnData={columnData} handleChange={this.handleChange} checked={checked}/>*/

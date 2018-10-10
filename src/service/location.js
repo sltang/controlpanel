@@ -11,7 +11,7 @@ export const getAll = () => {
 }
 
 export const add = (location) => {
-    //console.log(location)
+    if (locations.length === 0) getAll()
     let id = locations.length + 1;
     location['id'] = id;
     locations.push(location);
@@ -21,6 +21,7 @@ export const add = (location) => {
 }
 
 export const getById = (id) => {
+    if (locations.length === 0) getAll()
     let locs = locations.filter(location => location.id === parseInt(id, 10))
     if (locs.length > 0) {
         return locs[0];
@@ -38,10 +39,20 @@ export const update = (location) => {
     }
 }
 
-export const remove = (id) => {
-    for (let i=0; i<locations.length; i++) {
+// export const remove = (id) => {
+//     for (let i=0; i<locations.length; i++) {
+//         if (id === locations[i].id) {
+//             locations.splice(i, 1);
+//         }
+//     }
+// }
+
+export const remove = (ids) => {
+    ids.forEach(id => {
+      for (let i = 0; i < locations.length; i++) {
         if (id === locations[i].id) {
             locations.splice(i, 1);
         }
-    }
-}
+      }
+    })
+  }

@@ -10,7 +10,6 @@ const styles = theme => ({
         flexWrap: 'wrap',
         marginTop: '5px',
         marginLeft:'8px', 
-        //paddingRight:'5px',
     },
     info: {
         fontSize: '10px'
@@ -20,7 +19,6 @@ const styles = theme => ({
     },
     button:{
         width: '100px',
-        textTransform: 'none',
         fontSize: '0.6rem !important',
         fontWeight: '400',
         minHeight: '30px',

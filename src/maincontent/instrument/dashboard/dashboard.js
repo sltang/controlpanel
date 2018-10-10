@@ -36,8 +36,8 @@ const UPDATE_SIZE = 10;
 
 class InstrumentDashboard extends Component {
 
-    randomLength = 30000
-    timer = null
+    //randomLength = 30000
+    //timer = null
 
     constructor(props) {
         super(props);
@@ -51,14 +51,14 @@ class InstrumentDashboard extends Component {
             //currentRun : 0
         }
         //this.computeInstrumentState = this.computeInstrumentState.bind(this)
-        this.simulateInstrumentUpdate = this.simulateInstrumentUpdate.bind(this)
+        //this.simulateInstrumentUpdate = this.simulateInstrumentUpdate.bind(this)
         this.handleClose = this.handleClose.bind(this);
         this.fetchMoreData = this.fetchMoreData.bind(this);
         this.handleHeadingClick = this.handleHeadingClick.bind(this);        
-        this.timer = setInterval(this.simulateInstrumentUpdate, parseInt(Math.random() * this.randomLength + 10000, 10))
+        //this.timer = setInterval(this.simulateInstrumentUpdate, parseInt(Math.random() * this.randomLength + 10000, 10))
     }
 
-    simulateInstrumentUpdate() {
+    //simulateInstrumentUpdate() {
         // let data = [{
         //     "applicationId": 1, 
         //     "defaultProjectId": 2, 
@@ -80,7 +80,7 @@ class InstrumentDashboard extends Component {
         //     runQueue: ['Sample 21', 'Current sample title 2', 'Sample 22', 'Sample 23']
         // }]
         // this.computeInstrumentState(data)
-    }
+    //}
 
     componentDidMount() {   
         // let data = [{
@@ -257,9 +257,9 @@ class InstrumentDashboard extends Component {
         }
     }
 
-    componentWillUnmount() {
-        clearInterval(this.timer)
-    }
+    //componentWillUnmount() {
+    //    clearInterval(this.timer)
+    //}
 
     // computeInstrumentState(instruData) {       
     //     let instruments = {}
@@ -287,133 +287,22 @@ class InstrumentDashboard extends Component {
     //     this.setState({...instruments})
     // }
 
-    
-
-    // groupByStatus = (instruments) => {
-    //     return instruments.reduce((acc, instru) => {
-    //         let status = this.getStatus(Object.values(instru)[0]);
-    //         if (!acc[status]) {
-    //             acc[status] = [];
-    //         }
-    //         acc[status].push(instru);
-    //         return acc;
-    //     }, {});
-    // }
-
-    // groupBy(objectArray, property) {
-    //     return objectArray.reduce(function (acc, obj) {
-    //         if (obj.hasOwnProperty(property)) {
-    //             var key = obj[property];
-    //             if (!acc[key]) {
-    //                 acc[key] = [];
-    //             }
-    //             acc[key].push(obj);
-    //         }      
-    //         return acc;
-    //     }, {});
-    // }
-
-    // handleGroupBy = event => {
-    //     let groupBy = event.target.value;
-    //     let filtered = []
-    //     Object.keys(this.state).filter(key => statesToFilter.indexOf(key) === -1).forEach(key => {
-    //         let o = {};
-    //         o[key] = this.state[key]
-    //         filtered.push(o)
-    //     })
-        
-    //     let groupedInstruments = this.groupByStatus(filtered)
-    //     // filtered.reduce((acc, instru) => {
-    //     //     let status = this.getStatus(Object.values(instru)[0]);
-    //     //     if (!acc[status]) {
-    //     //         acc[status] = [];
-    //     //     }
-    //     //     acc[status].push(instru);
-    //     //     return acc;
-    //     // }, {});
-    //     this.setState({groupedInstruments:groupedInstruments, groupBy: groupBy})
-    // }
-
-    // handleFilterBy = event => {
-    //     let filterBy = event.target.value
-    //     let filtered = []
-    //     Object.keys(this.state).filter(key => statesToFilter.indexOf(key) === -1).forEach(key => {
-    //         let o = {};
-    //         o[key] = this.state[key]
-    //         filtered.push(o)
-    //     })
-    //     let groupedInstruments = this.groupByStatus(filtered)
-    //     //console.log(filtered)
-    //     //console.log(groupedInstruments)
-    //     Object.keys(groupedInstruments).forEach(key =>{
-    //         if (key !== filterBy) {
-    //             delete groupedInstruments[key]
-    //         }
-    //     })
-    //     //console.log(groupedInstruments)
-    //     this.setState({groupedInstruments:groupedInstruments, filterBy:filterBy})
-    // }
-
     handleClose = (id) => {    
         if (this.props.handleClose !== undefined) {
             this.props.handleClose(id)
         }
-        // if (!this.state.groupBy || !this.state.filterBy) {
-        //     let state = this.state
-        //     delete state[id]
-        //     this.setState(state)
-        // } else {    
-        //     let groupedInstruments = this.state.groupedInstruments
-        //     //console.log(Object.values(groupedInstruments))
-        //     Object.values(groupedInstruments).forEach(arr => {
-        //         let idx = -1;
-        //         arr.forEach((o, index) => {
-        //             if (o.hasOwnProperty(id)) {
-        //                 idx = index
-        //                 return                        
-        //             }
-        //         })
-        //         if (idx !== -1) {
-        //             arr.splice(idx, 1)
-        //         }
-        //     })
-        //     this.setState({groupedInstruments:groupedInstruments})
-        // }
     }
-
-    // getStatus = (data) => {
-    //     //console.log(data)
-    //     let values = data.map(s => s.value)
-    //     if (values[3] > 0) return 'Error';
-    //     if (values[0] > 0 || values[1] > 0) return 'Running';
-    //     if (values[0] === 0 && values[1] === 0 && values[2] > 0 && values[3] === 0) return 'Idle';
-    //     if (values[0] === 0 && values[1] === 0 && values[2] === 0 && values[3] === 0)  return 'Not Connected';
-    // }
 
     fetchMoreData() {
         if (this.state.start >= this.state.instruments.length) {
           this.setState({ hasMore: false });
           return;
         }
-
         let start = this.state.start
         let end = start + UPDATE_SIZE
         let data = this.state.data
         data.push(...this.state.instruments.slice(start, end))
         this.setState({ start: end})
-
-        // setTimeout(() => {
-        //     let moreInstruments = {}
-        //     let start = Object.keys(this.state).length-statesToFilter.length
-        //     for (let i=0; i< 10;i++) {
-        //         moreInstruments[start+i] = [{value:3, name:'Pending'}, {value:0, name:'Queued'}, {value:0, name:'Done'}, {value:1, name:'Error'}]
-        //     }
-        //     this.setState({
-        //       ...this.state, ...moreInstruments
-        //     });
-        //     //groupedInstruments too
-        //   }, 500);
-
     }
 
     handleHeadingClick(myKey) {
@@ -456,21 +345,7 @@ class InstrumentDashboard extends Component {
                     </div>
                 )
             })}</Fragment>)            
-        // if (Object.keys(this.state).length > 0) {
-        //     return (
-        //         <Grid container className={classes.root} spacing={16}>                
-        //             <Grid container justify="center" spacing={16}>
-        //                 {Object.keys(this.state).filter(state => statesToFilter.indexOf(state) === -1).map((key, index) => {
-        //                     return <Grid key={index} item>
-        //                     <Instrument deviceId={key} data={this.state[key].data} instrument={this.state[key]}
-        //                     handleClose={this.handleClose}
-        //                     />
-        //                     </Grid>
-        //                 })}                        
-        //             </Grid>
-        //         </Grid>       
-        //     )
-        } else {//if (data !== undefined) {
+        } else {
             return (
                 <InfiniteScroll
                     pageStart={0}

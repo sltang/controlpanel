@@ -5,10 +5,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-//import Tooltip from '@material-ui/core/Tooltip';
 import classNames from 'classnames'
-
+import AgCheckbox from '../components/checkbox'
 
 const styles = theme => ({
 
@@ -40,10 +38,7 @@ class MyTableHead extends React.Component {
 
   componentDidMount() {
     let noSelected = this.props.noSelected !== undefined;
-    //if (prevProps.noSelected !== this.props.noSelected) {
-      this.setState({noSelected: noSelected})
-      //console.log(this.state.noSelected);
-    //}
+    this.setState({noSelected: noSelected})
   }
 
   createSortHandler = property => event => {
@@ -68,18 +63,18 @@ class MyTableHead extends React.Component {
 
     return (
       <TableHead>
-        <TableRow className={classes.head}>
+        <TableRow className={classes.columnHead}>
           {this.state.noSelected ? <TableCell padding="checkbox" />:
           <TableCell padding="checkbox">
-            <Checkbox
-              indeterminate={numSelected > 0 && numSelected < rowCount}
+            <AgCheckbox                                
+              //indeterminate={numSelected > 0 && numSelected < rowCount}
               checked={numSelected === rowCount}
-              onChange={onSelectAllClick}
+              onChange={onSelectAllClick}           
             />
           </TableCell>}
           {columnData.map(column => {
             return (
-              <TableCell className={classes.columnHead}
+              <TableCell className={classes.columnHead} 
                 key={column.id}
                 numeric={column.numeric}
                 padding={column.disablePadding ? 'none' : 'default'}
@@ -112,6 +107,8 @@ MyTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
+
+// const combinedStyles = theme => ({...agstyles(theme), ...styles(theme)})
 
 export default withStyles(styles)(MyTableHead);
 

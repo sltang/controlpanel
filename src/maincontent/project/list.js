@@ -1,82 +1,72 @@
 import React from 'react';
-import * as dataService from '../../service/dataservice.js';
+import * as projectService from '../../service/project.js';
 import MyTable from '../table';
 import { withRouter } from 'react-router';
 
 class ListProject extends React.Component {
   constructor(props, context) {
     super(props, context);
-
     this.state = {
-      order: 'asc',
-      orderBy: '',
-      selected: [],
       data: [],
-      page: 0,
-      rowsPerPage: 5,
+      type: {label:'Projects', name:'project'}
     };
-
+    this.handleDelete = this.handleDelete.bind(this)
 
   }
 
   componentWillReceiveProps(nextProps) {
     let projects;
-    //console.log(nextProps.location.pathname);
     if (nextProps.location.pathname === '/projects') {
-      projects = dataService.getAll('project');
+      projects = projectService.getAll();
     } else {
-      projects = dataService.getById('project', nextProps.location.pathname.replace('/projects/', ''));
+      projects = projectService.getById(nextProps.location.pathname.replace('/projects/', ''));
 
     }
     this.setState({ data:projects});
   }
 
   handleClick = (id) => {
-    const { history:{ push }, type } = this.props;
-    //console.log('/'+type.name+'/view/'+id);
-    push('/'+type.name+'/view/'+id);
+    const { history:{ push } } = this.props;
+    push('/project/view/'+id);
   }
 
   componentDidMount() {
     let projects;
     const { match } = this.props;
-    //console.log(this.props.location.pathname);
-    //console.log('match.params.id:'+match.params.id);
     if (match.params.id !== undefined) {
-      //console.log('match.params.id:'+match.params.id);
-      projects = dataService.getById('project', match.params.id);//location
+      projects = projectService.getById(match.params.id);
     } else {
-      projects = dataService.getAll('project');
+      projects = projectService.getAll();
     }
     this.setState({ data:projects});
   }
 
   componentDidUpdate(prevProps) {
-    //console.log(this.props.match.params.id)
-    //console.log(prevProps.match.params.id)
-    const { history:{ push }, type } = this.props;
+    const { history:{ push } } = this.props;
     if (this.props.match.params.id !== prevProps.match.params.id) {
       if (this.props.match.params.id !== undefined) { 
-        //console.log('/'+type.name+'/view/'+this.props.match.params.id);
-        push('/'+type.name+'/view/'+this.props.match.params.id);
+        push('/project/view/'+this.props.match.params.id);
       } else {
         let projects;
-        projects = dataService.getAll('project');
+        projects = projectService.getAll();
         this.setState({ data:projects});
       }    
     } else if (this.state.data.length === 0) {
-      push('/'+type.name+'/view/'+this.props.match.params.id);
+      push('/project/view/'+this.props.match.params.id);
     }
   }
 
+  handleDelete(ids) {
+    projectService.remove(ids)
+    let projects = projectService.getAll();
+    this.setState({ data:projects});
+  }
+
   render() {
-    const { type,  columnData } = this.props;
-    const { data } = this.state;
-    //console.log(data);
-    //const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-    //console.log(columnData);
+    const { columnData } = this.props;
+    const { data, type } = this.state;
     return (
-      <MyTable data={data} columnData={columnData} type={type} onClick={this.handleClick} />
+      <MyTable data={data} columnData={columnData} type={type} onClick={this.handleClick} handleDelete={this.handleDelete}/>
     );
   }
 }

@@ -1,26 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import ProjectProperties from './projectproperties';
-import Button from '@material-ui/core/Button';
 import ProjectCDSSettings from './projectcdssettings';
 import { withRouter } from 'react-router';
-import * as dataService from '../../service/dataservice.js';
+import * as projectService from '../../service/project';
+import AgTabs from '../../components/tabs'
+import AgButton from '../../components/button'
 
 const styles = theme => ({
   root: {
-
     flexGrow: 1,
 
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing.unit * 2,
   },
   head: {
     display: 'flex',
@@ -29,7 +21,8 @@ const styles = theme => ({
     display: '-webkit-flex',
     '-webkit-flex-direction': 'row',
     justifyContent: 'space-between',
-  },
+    fontSize: '20px'
+  }
 
 });
 
@@ -52,6 +45,7 @@ class ViewProject extends Component {
     this.state = {
       value: 0
     };
+    this.handleCopyClick = this.handleCopyClick.bind(this)
   }
 
   componentDidMount() {
@@ -59,9 +53,9 @@ class ViewProject extends Component {
     let id = match.params.id;
     let projects;
     if (isNaN(id)) {
-      projects = dataService.getByName('project', match.params.id);
+      projects = projectService.getByName(match.params.id);
     } else {
-      projects = dataService.getById('project', match.params.id);
+      projects = projectService.getById(match.params.id);
     }
     if (projects.length > 0) {
       this.setState({ project:projects[0] });
@@ -73,9 +67,9 @@ class ViewProject extends Component {
       let projects;
       let id = this.props.match.params.id;
       if (isNaN(id)) {
-        projects = dataService.getByName('project', id);
+        projects = projectService.getByName(id);
       } else {
-        projects = dataService.getById('project', id);
+        projects = projectService.getById(id);
       }
       if (projects.length > 0) {
         this.setState({ project:projects[0] });
@@ -92,6 +86,11 @@ class ViewProject extends Component {
     push('/project/edit/'+match.params.id);
   }
 
+  handleCopyClick() {
+    const { history:{ push }, match } = this.props;
+    push('/project/copy/'+match.params.id);
+  }
+
   render() {
     const { classes } = this.props;
     const { project, value } = this.state;
@@ -100,15 +99,18 @@ class ViewProject extends Component {
     } else {
       return (        
         <div className={classes.root}>
-         <div className={classes.head}><div>{project.name}</div><Button variant="outlined" className={classes.button} onClick={this.handleEditClick}>Edit</Button> </div>
+          <div className={classes.head}>
+            <div>{project.name}</div>
+            <div>
+              <AgButton type="primary" value="Edit" onClick={this.handleEditClick} />
+              <AgButton type="primary" value="Copy" onClick={this.handleCopyClick} />
+            </div>
+          </div>
          <div position="static">
-          <Tabs
-              value={value}
-              onChange={this.handleChange}
-            >
-              <Tab label="Properties" />
-              <Tab label="CDS Settings" />
-          </Tabs>
+         <AgTabs onChange={this.handleChange} value={value}>        
+            <Tab label="Properties" disableRipple style={{textTransform:'none', outline:'none', backgroundColor:'#e1e3e5'}} />
+            <Tab label="CDS Settings" disableRipple style={{textTransform:'none', outline:'none', backgroundColor:'#e1e3e5'}} />
+         </AgTabs>
           {value === 0 && <TabContainer><ProjectProperties project={project} /></TabContainer>}
           {value === 1 && <TabContainer><ProjectCDSSettings project={project} /></TabContainer>}
           </div>

@@ -14,7 +14,6 @@ class PieChart extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {}
-        //this.renderChart = this.renderChart.bind(this)
     }
 
     componentDidMount() {
@@ -29,8 +28,6 @@ class PieChart extends PureComponent {
     }
     
     renderChart(groupBy, data, handleArcClick) {        
-
-        //const data = [{"name":"...", "value":20}, ...];
 
         const arc = d3.arc()
             .outerRadius(radius - 10)
@@ -88,90 +85,11 @@ class PieChart extends PureComponent {
             .call(wrap, 75)
             .on("click", (d) => clicked(groupBy, d.data.name))
 
-        // g.append('path')
-        //     .attr('d', arc)
-        //     .style('fill', (d) => { return color(d.data.name) })
-            
-
-        // g.append('text')
-        //     .attr("text-anchor", "middle")
-        //     .attr('transform', (d) => { return 'translate(' + labelArc.centroid(d) + ')' })
-        //     .attr('dy', 0)
-        //     .attr('y', 0)
-        //     .text(function(d) {
-        //         return d.data.name;//JSON.stringify(d);//d.data.name;// + '\n' + d.data.value;
-        //     })
-        //     //.call(wrap, 50)
-        //     .style("fill", "#000")
-        //     .style("font-size", "12px")
-        // let pie = d3.pie().value(function(d) { return d.presses; })(data);
-        // let arc = d3.arc()
-        // .outerRadius(radius - 10)
-        // .innerRadius(0);
-
-        // let labelArc = d3.arc()
-        // .outerRadius(radius - 40)
-        // .innerRadius(radius - 40);
-
-        // let svg = d3.select("#pie")
-        // .append("svg")
-        // .attr("width", width)
-        // .attr("height", height)
-        //     .append("g")
-        //     .attr("transform", "translate(" + width/2 + "," + height/2 +")"); 
-
-        // let g = svg.selectAll("arc")
-        //     .data(pie)
-        //     .enter().append("g")
-        //     .attr("class", "arc");
-
-        // g.append("path")
-        // .attr("d", arc)
-        // .style("fill", function(d) { return color(d.data.letter);})
-        // .on("click", clicked)
-
-        // g.append("text")
-        // .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-        // .attr("dy", 0)
-        // .text(function(d) { return d.data.letter;})
-        // .call(wrap, 50)
-        // .style("fill", "#000")
-
         function clicked(groupBy, name) {
             if (handleArcClick !== undefined) {
                 handleArcClick(groupBy, name)
             }
-            //console.log(d)//d.data.name
         }
-
-        // let vis = d3.select("svg")
-        //             .data([data])
-        //             .append("g")
-        //             .attr("transform", "translate(" + radius + "," + radius + ")")
-
-        // let arc = d3.arc().outerRadius(radius).innerRadius(0)
-
-        // let pie = d3.pie()           //this will create arc data for us given a list of values
-        //             .value(function(d) { return d.value; });
-
-        // let arcs = vis.selectAll("g.slice")
-        //         .data(pie)
-        //         .enter()
-        //         .append("g")
-        //         .attr("class", "slice")
-        
-        //arcs.append("path")
-            //.attr("fill", function(d) { console.log(d); return color(d.value); } )
-            //.attr("d", arc)
-
-        // arcs.append("text") 
-        //     .attr("transform", function(d) {
-        //         d.innerRadius = 0
-        //         d.outerRadius = radius
-        //         return "translate(" + arc.centroid(d) + ")"
-        //     })
-        //     .attr("text-anchor", "middle")
-        //     .text(function(d, i) { return data[i].label; })
 
         function wrap(text, width) {
             text.each(function() {
@@ -196,13 +114,9 @@ class PieChart extends PureComponent {
                     }
                     word = words.pop()
                 }
-                //text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(parts[0]);
                 text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(parts[1]);
             });
         }
-   
-
-
     }
 
     render() {

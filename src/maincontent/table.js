@@ -6,30 +6,31 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
-import * as utils from '../service/utils.js';
 import { Subject } from 'rxjs/Subject';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { debounceTime, map } from 'rxjs/operators';
 import MyTableToolbar from './tabletoolbar'
 import MyTableHead from './tablehead'
-
+import AgCheckbox from '../components/checkbox'
 
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
-    
+    marginTop: theme.spacing.unit * 3,   
+  },
+  selected: {
+    '&$selected': {
+      backgroundColor:'#f5f5f5',
+    }
   },
   tableWrapper: {
     overflowX: 'auto',
+    marginTop: '10px'
   },
   hover:{
     '&$hover:hover': {
       backgroundColor:'#f5f5f5'
     }
-  }
-
-  
+  }, 
 });
 
 class MyTable extends React.Component {
@@ -43,33 +44,25 @@ class MyTable extends React.Component {
       data: [...this.props.data],
       rowsPerPage: this.props.rowsPerPage === undefined ? 5 : this.props.rowsPerPage,
       noSelected: false,
-      searchValue: ''
+      searchValue: '',
+      hoverIndex: -1
     };
     this.handleSearch$ = new Subject();
+    this.handleMouseEvent$ = new Subject();
+    this.handleMouseEnter = this.handleMouseEnter.bind(this)
+    this.handleMouseLeave = this.handleMouseLeave.bind(this)
   }
 
 
   handleSearchOn = on => {
-    //console.log(on) 
-    //this.setState({searchOn: on});
-    // if (!on) {
-    //   this.setState({data:this.props.data})
-    //   if (this.props.handleSearch) {
-    //     this.props.handleSearch([], false)
-    //   }
-    // } else {
-    //   if (this.props.handleSearch) {
-    //     this.props.handleSearch(this.props.data, true)
-    //   }
-    // }
     if (this.props.handleSearchOn) {
       this.props.handleSearchOn(on)
+    } else {
+      this.setState({searchOn:on})
     }
   }
 
-  handleSearch = term => {//event => {
-    //const term = event.target.value
-    //console.log(term)
+  handleSearch = term => {
     if (term) {
       this.handleSearch$.next(term)
     }
@@ -98,27 +91,43 @@ class MyTable extends React.Component {
     this.handleSearch$
       .pipe(
         debounceTime(500),
-        //distinctUntilChanged(),
         map(term => this.search(term))
       )
       .subscribe(matches => {
         //console.log(matches)
-        //this.setState({data:matches})
         if (this.props.handleSearch) {
-          this.props.handleSearch(matches)//, true)
+          this.props.handleSearch(matches)
+        } else {
+          this.setState({data:matches})
         }
+      })
+      this.handleMouseEvent$
+      .pipe(
+          debounceTime(100),
+      )
+      .subscribe(event => {
+          this.setState({hoverIndex:event.direction === 'in' ? event.hoverIndex:-1})
       })
   }
 
   componentDidUpdate() {
     const { data, searchOn } = this.props
-    if (this.state.data !== data && !searchOn) {
+    if (this.state.data !== data && !searchOn && !this.state.searchOn) {
       this.setState({ data })
     }
   }
 
   componentWillUnmount() {
     this.handleSearch$.unsubscribe()
+    this.handleMouseEvent$.unsubscribe()
+  }
+
+  handleMouseEnter(e, index) {
+    this.handleMouseEvent$.next({hoverIndex:index, direction:'in'})
+  }
+
+  handleMouseLeave(e, index) { 
+    this.handleMouseEvent$.next({hoverIndex:index, direction:'out'})
   }
 
   handleRequestSort = (event, property) => {
@@ -190,9 +199,10 @@ class MyTable extends React.Component {
   }
 
   render() {
-    const { classes, type, columnData, noSelected, searchOn } = this.props;
-    const { order, orderBy, selected, rowsPerPage, page, searchValue } = this.state;
+    const { classes, type, columnData, noSelected } = this.props;
+    const { order, orderBy, selected, rowsPerPage, page, searchValue, hoverIndex } = this.state;
     let data = this.state.data
+    let searchOn = this.props.searchOn
     if (searchOn) {      
         const regex = new RegExp(searchValue, 'gi')
         let filteredData = this.props.data.filter(e => {
@@ -205,7 +215,9 @@ class MyTable extends React.Component {
           })
           return match;
         })
-        data = filteredData//this.filter(searchValue, data)//filteredData
+        data = filteredData
+    } else {
+        searchOn = this.state.searchOn
     }
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
     return (
@@ -231,7 +243,7 @@ class MyTable extends React.Component {
                 return (
                   <TableRow
                     hover
-                    classes={{hover:classes.hover}}
+                    classes={{hover:classes.hover,selected:classes.selected}}
                     onClick={event => this.handleClick(event, n.id)}
                     role="checkbox"
                     aria-checked={isSelected}
@@ -240,8 +252,13 @@ class MyTable extends React.Component {
                     selected={isSelected}
                   >
                     {this.state.noSelected ? <TableCell padding="checkbox" /> :
-                      <TableCell padding="checkbox">
-                        <Checkbox checked={isSelected} />
+                      <TableCell padding="checkbox" >                        
+                        <AgCheckbox
+                          checked={isSelected}
+                          handleMouseEnter={e => this.handleMouseEnter(e, n.id)} 
+                          handleMouseLeave={e => this.handleMouseLeave(e, n.id)}                                
+                          indeterminate={n.id === hoverIndex}
+                        />
                       </TableCell>}
                     {columnData.map((column, index) => {
                       return index === 0 ?
@@ -267,9 +284,13 @@ class MyTable extends React.Component {
           page={page}
           backIconButtonProps={{
             'aria-label': 'Previous Page',
+            style:{outline:'none'},
+            disableRipple:true,
           }}
           nextIconButtonProps={{
             'aria-label': 'Next Page',
+            style:{outline:'none'},
+            disableRipple:true,
           }}
           onChangePage={this.handleChangePage}
           onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -283,5 +304,7 @@ class MyTable extends React.Component {
 MyTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
+
+// const combinedStyles = theme => ({...agstyles(theme), ...styles(theme)})
 
 export default withStyles(styles)(MyTable);

@@ -6,33 +6,41 @@ const projects = [
 
 ]
 
-//class InstrumentService {
-
-  export const getAll = () => {
-    return projects;
-  }
+export const getAll = () => {
+  return projects;
+}
 
 
-  export const getTree = () => {
-    // return [
-    //   {id:1, name:'Project 1', nodes:[]},
-    //   {id:2, name:'Project 2', nodes:[]}
-    // ];
-    return [{ id:0, title: 'Projects', dragDisabled: true,  children: [
-          {id:1, title:'Project 1', dragDisabled: true, children:[]},
-          {id:2, title:'Project 2', dragDisabled: true, children:[]},
-        ]
-    }];
-  }
+export const getTree = () => {
+  return [{ id:0, title: 'Projects', dragDisabled: true,  children: [
+        {id:1, title:'Project 1', dragDisabled: true, children:[]},
+        {id:2, title:'Project 2', dragDisabled: true, children:[]},
+      ]
+  }];
+}
 
-  export const getByName = (name) => {
-    return projects.filter(instr => instr['name'] === name);
-  }
+export const getByName = (name) => {
+  return projects.filter(instr => instr['name'] === name);
+}
 
-  export const getById = (id) => {
-    const project = projects.filter(project => project['id'] === parseInt(id, 10));
-    return project;
-  }
-//}
+export const getById = (id) => {
+  const project = projects.filter(project => project['id'] === parseInt(id, 10));
+  return project;
+}
 
-//exports.instrumentService = new InstrumentService();
+export const add = project => {    
+  const id = projects.length + 1;
+  project.id = id
+  projects.push(project)
+}
+
+export const remove = (ids) => {
+  ids.forEach(id => {
+    for (let i = 0; i < projects.length; i++) {
+      if (id === projects[i].id) {
+        projects.splice(i, 1);
+      }
+    }
+  })
+}
+

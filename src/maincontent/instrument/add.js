@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
 import { withRouter } from 'react-router';
-import * as dataService from '../../service/dataservice.js';
+import * as instrumentService from '../../service/instrument';
+import * as projectService from '../../service/project';
+import AgCheckbox from '../../components/checkbox'
+import AgButton from '../../components/button'
 
 const styles = theme => ({
   root: {
@@ -18,67 +13,13 @@ const styles = theme => ({
     flexWrap: 'wrap',
     fontSize: '20px',
   },
-  detailsItem: {
-    paddingTop: theme.spacing.unit * 2,
-    marginLeft: theme.spacing.unit * 5,
-  },
   container: {
     display: 'flex',
     flexWrap: 'wrap',
-  },
-  textFieldAlign: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 500,
-  },
-  menu: {
-    width: 500,
-  },
-  defaultProjectCheck: {
-    marginLeft: theme.spacing.unit * 5,
-  },
-  button: {
-    margin: theme.spacing.unit,
-  },
-  buttons: {
-    display: 'flex',
-    marginTop: theme.spacing.unit * 5,
-    justifyContent: 'flex-end'
-  },
-  formControl: {
-    marginLeft: theme.spacing.unit,
-    minWidth: 240,
-  },
+  }
 })
 
-const types = [
-  {
-    value: 'Agilent GC & GC/MS Systems',
-    label: 'Agilent GC & GC/MS Systems',
-  },
-  {
-    value: 'Agilent LC & LC/MS',
-    label: 'Agilent LC & LC/MS',
-  },
-  {
-    value: 'Agilent AD System',
-    label: 'Agilent AD System',
-  },
-  {
-    value: 'Virtual Instruments',
-    label: 'Virtual Instruments',
-  },
-]
-
-// const projects = [
-//   { value: '', label: 'None' },
-//   { value: 'Project 1', label: 'Project 1' },
-//   { value: 'Project 2', label: 'Project 2' },
-// ]
+export const types = ['Agilent GC & GC/MS Systems', 'Agilent LC & LC/MS', 'Agilent AD System','Virtual Instruments']
 
 class AddInstrument extends Component {
 
@@ -93,9 +34,8 @@ class AddInstrument extends Component {
   }
 
   componentDidMount() {
-    let projects = dataService.getAll('project')
-    this.setState({projects})
-    
+    let projects = projectService.getAll()
+    this.setState({projects})    
   }
 
   handleChange = name => event => {
@@ -119,9 +59,8 @@ class AddInstrument extends Component {
   };
 
   handleOKClick = event => {
-    //console.log(this.state.instrument);
     const { history:{ push } } = this.props;
-    dataService.add('instrument', this.state.instrument);
+    instrumentService.add(this.state.instrument);
     push('/instruments');
   }
 
@@ -136,114 +75,85 @@ class AddInstrument extends Component {
     return (
       <div>
         <div className={classes.root}>Create Instrument</div>
-        <form className={classes.container} noValidate autoComplete="off">
-          <TextField
-            id="name"
-            label="Name"
-            className={classes.textField}
-            value={instrument.name ? instrument.name:''}
-            onChange={this.handleChange('name')}
-            margin="normal"
-            fullWidth
-          />
-          <TextField
-            id="desc"
-            label="Description"
-            className={classes.textFieldAlign}
-            multiline
-            rows="4"
-            value={instrument.desc ? instrument.desc:''}
-            onChange={this.handleChange('desc')}
-            margin="normal"
-            fullWidth
-          />
-          <TextField
-            id="application"
-            label="Application"
-            className={classes.textFieldAlign}
-            readOnly
-            value={instrument.application ? instrument.application:''}
-            margin="normal"
-            fullWidth
-          />
-           <TextField
-            id="controller"
-            label="Instrument controller"
-            className={classes.textFieldAlign}
-            readOnly
-            value={instrument.controller ? instrument.controller:''}
-            margin="normal"
-            fullWidth
-          />
-          <TextField
-            id="select-type"
-            select
-            label="Instrument type"  
-            className={classes.textField}          
-            value={instrument.type}
-            onChange={this.handleChange('type')}
-            SelectProps={{
-              MenuProps: {
-                native: 'true',
-                className: classes.menu,
-              },
-            }}
-            margin="normal"
-          >
-            {types.map(option => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            id="contact"
-            label="Contact"
-            className={classes.textFieldAlign}
-            value={instrument.contact === undefined ? '':instrument.contact}
-            onChange={this.handleChange('contact')}
-            margin="normal"
-            fullWidth
-          />
-          <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="defaultProject">Default Project</InputLabel>
-            <Select
-              value={instrument.defaultProject ? instrument.defaultProject:''}
-              onChange={this.handleDefaultProjectChange}
-              inputProps={{
-              name: 'Default Project',
-              id: 'defaultProject',
-              }}
-              >
-              <MenuItem value={''}>None</MenuItem>
-              {projects.map(project => (
-                <MenuItem key={project.id} value={project.id}>
-                  {project.name}
-                </MenuItem>
-              ))}
-            </Select>
-            </FormControl>
-          <FormControlLabel
-            control={
-              <Checkbox
-                disabled={alwaysUseDefaultProjectDisabled}
-                checked={instrument.alwaysUseDefaultProject ? instrument.alwaysUseDefaultProject:false}
-                onChange={this.handleChange('alwaysUseDefaultProject')}
-                className={classes.defaultProjectCheck}
-              />
-            }
-            label="Always use default project with this instrument"
-          />
-          
-        </form>
-        <div className={classes.buttons}>
-            <Button variant="outlined" className={classes.button} color="primary" onClick={this.handleOKClick}>
-              OK
-            </Button>
-            <Button variant="outlined" className={classes.button} color="secondary" onClick={this.handleCancelClick}>
-              Cancel
-            </Button>
-          </div>
+        <form>
+            <div className="form-group row">
+              <label htmlFor="name" className="col-sm-2 col-form-label">Name</label>
+              <div className="col-sm-10">
+                <input type="text" className="form-control" aria-describedby="name" placeholder="Name" value={instrument.name ? instrument.name:''} onChange={this.handleChange('name')} />
+              </div>
+            </div>
+            <div className="form-group row">
+              <label htmlFor="description" className="col-sm-2 col-form-label">Description</label>
+              <div className="col-sm-10">
+                <textarea className="form-control" rows="4" value={instrument.desc ? instrument.desc:''}
+                onChange={this.handleChange('desc')}></textarea>
+              </div>
+            </div>
+            <div className="form-group row">
+              <label htmlFor="application" className="col-sm-2 col-form-label">Application</label>
+              <div className="col-sm-10">
+                <input type="text" className="form-control" aria-describedby="application" placeholder="Application" value={instrument.application ? instrument.application:''} onChange={this.handleChange('application')} />
+              </div>
+            </div>
+            <div className="form-group row">
+              <label htmlFor="controller" className="col-sm-2 col-form-label">Instrument controller</label>
+              <div className="col-sm-10">
+                <input type="text" className="form-control" aria-describedby="controller" placeholder="Instrument controller" value={instrument.controller ? instrument.controller:''} onChange={this.handleChange('controller')} />
+              </div>
+            </div>
+            <div className="form-group row">
+              <label htmlFor="type" className="col-sm-2 col-form-label">Instrument type</label>
+              <div className="col-sm-10">
+                  <select
+                    className="form-control"
+                    value={instrument.type}
+                    onChange={this.handleChange('type')}
+                  >
+                  <option value={''}></option>
+                    {types.map((type, index) => {
+                      return <option key={index} value={type}>{type}</option>
+                    })}
+                  </select>               
+                </div>
+            </div>
+            <div className="form-group row">
+              <label htmlFor="contact" className="col-sm-2 col-form-label">Contact</label>
+              <div className="col-sm-10">
+                <input type="text" className="form-control" aria-describedby="contact" placeholder="Contact" value={instrument.contact ? instrument.contact:''} onChange={this.handleChange('contact')} />
+              </div>
+            </div>
+            <div className="form-group row">
+              <label htmlFor="type" className="col-sm-2 col-form-label">Default project</label>
+              <div className="col-sm-6">
+                  <select
+                    className="form-control"
+                    value={instrument.defaultProject ? instrument.defaultProject:''}
+                    onChange={this.handleDefaultProjectChange}
+                  >
+                    <option value={''}>None</option>
+                    {projects.map(project => {
+                      return <option key={project.id} value={project.id}>{project.name}</option>
+                    })}
+                  </select>               
+              </div>
+              <div className="col-sm-4">
+                <AgCheckbox
+                  disabled={alwaysUseDefaultProjectDisabled}
+                  checked={instrument.alwaysUseDefaultProject ? instrument.alwaysUseDefaultProject : false}
+                  onChange={this.handleChange('alwaysUseDefaultProject')}       
+                />
+                <label htmlFor="alwaysUseDefaultProject">always use default project with this instrument</label>
+                </div>
+            </div>
+            <div className="form-group row">
+              <div className="col-auto mr-auto">
+              </div>
+              <div className="col-auto">
+                <AgButton type="primary" onClick={this.handleOKClick} value="OK" />
+                <AgButton type="secondary" onClick={this.handleCancelClick} value="Cancel" />
+              </div>
+            </div>            
+          </form>
       </div>
     );
   }
